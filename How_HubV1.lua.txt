@@ -1,11 +1,67 @@
-if not game:IsLoaded() then game.Loaded:Wait() end
+-- Startup guard: never wait forever for game-specific loading flags.
+if not game:IsLoaded() then
+    local loaded = false
+    local ok = pcall(function()
+        game.Loaded:Wait()
+        loaded = true
+    end)
+    if not ok or not loaded then warn("[HowHub] Game load signal failed; continuing startup.") end
+end
 
 local ps = game:GetService("Players")
-repeat task.wait() until ps.LocalPlayer
+local lp = ps.LocalPlayer
+local playerDeadline = os.clock() + 15
+while not lp and os.clock() < playerDeadline do
+    task.wait(0.1)
+    lp = ps.LocalPlayer
+end
+if not lp then
+    error("[HowHub] LocalPlayer was not available after 15 seconds.", 0)
+end
 
-local lp, rv = ps.LocalPlayer, getrenv().shared
-while lp:GetAttribute("IsLoaded") ~= true do lp:GetAttributeChangedSignal("IsLoaded"):Wait() end
-repeat task.wait(0.1) until rv.LoadingController and rv.LoadingController:IsLoaded()
+local envOk, env = pcall(function()
+    return getrenv()
+end)
+local lpShared = envOk and type(env) == "table" and env.shared or nil
+local lp, rv = lp, lpShared
+if type(rv) ~= "table" then
+    warn("[HowHub] Game shared controllers are not available yet; waiting briefly.")
+    local sharedDeadline = os.clock() + 15
+    repeat
+        task.wait(0.25)
+        envOk, env = pcall(function() return getrenv() end)
+        lpShared = envOk and type(env) == "table" and env.shared or nil
+        rv = lpShared
+    until type(rv) == "table" or os.clock() >= sharedDeadline
+end
+if type(rv) ~= "table" then
+    error("[HowHub] Could not access the game's shared controllers. The game may have updated or this executor may not expose getrenv().", 0)
+end
+
+-- The IsLoaded attribute/controller can be absent in some game versions; bound both waits.
+local attributeDeadline = os.clock() + 12
+while lp:GetAttribute("IsLoaded") ~= true and os.clock() < attributeDeadline do
+    task.wait(0.2)
+end
+if lp:GetAttribute("IsLoaded") ~= true then
+    warn("[HowHub] IsLoaded attribute did not become true; continuing with guarded startup.")
+end
+local controllerDeadline = os.clock() + 12
+local controllerReady = false
+while os.clock() < controllerDeadline do
+    local controller = rv.LoadingController
+    if controller and type(controller.IsLoaded) == "function" then
+        local okLoaded, result = pcall(function() return controller:IsLoaded() end)
+        if okLoaded and result == true then
+            controllerReady = true
+            break
+        end
+    end
+    task.wait(0.2)
+end
+if not controllerReady then
+    warn("[HowHub] LoadingController did not report ready within 12 seconds; continuing startup.")
+end
 
 local qk = {Right = "D", Left = "A", Up = "W"}
 
