@@ -1,4 +1,3 @@
--- Startup guard: never wait forever for game-specific loading flags.
 if not game:IsLoaded() then
     local loaded = false
     local ok = pcall(function()
