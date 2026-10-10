@@ -3051,6 +3051,16 @@ return L
 end)()
 
 local ge = getgenv()
+ge.__HowLoaded = false
+-- Saved-on toggles used to run their (blocking) workers while the UI was still being built,
+-- which froze the rest of the script. Start them in their own thread once loading is done.
+local function afterLoad(fn)
+	task.spawn(function()
+		local dl = os.clock() + 30
+		while not ge.__HowLoaded and os.clock() < dl do task.wait(0.2) end
+		fn()
+	end)
+end
 local gi = (function()
 	local dc, p = crypt and crypt.base64decode or base64_decode, "Avenoric/Assets/HowLogo.png"
 	if not (dc and getcustomasset and writefile) then return nil end
@@ -3947,7 +3957,7 @@ gt:Dropdown({Name = "Select Farm Island", Options = iz, Flag = "fi"})
 ft = gt:Toggle({Name = "Auto Fish", Flag = "af", Callback = function(v)
 	local o = ge.__FmF
 	if v then
-		fs()
+		afterLoad(fs)
 	elseif o then
 		if o.bz and (o.s.fp or o.s.rl) and not (o.s.cr or o.s.rr) then o.fq = true else o.st = "Stopped" end
 	end
@@ -4031,12 +4041,12 @@ local tm = gw:Tab({Name = "Misc", Icon = "four-squares-grid"})
 tm:Section({Name = "Unit"})
 tm:Dropdown({Name = "Delete Rarity", Options = {"Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythical"}, Default = {}, Multi = true, Flag = "ur"})
 xk = tm:Toggle({Name = "Auto Delete Unit", Flag = "ua", Callback = function(v)
-	if v then xy() elseif ge.__FmU then ge.__FmU.st = "Stopped" end
+	if v then afterLoad(xy) elseif ge.__FmU then ge.__FmU.st = "Stopped" end
 end})
 tm:Section({Name = "Aura"})
 tm:Dropdown({Name = "Delete Rarity", Options = {"Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythical", "Divine"}, Default = {}, Multi = true, Flag = "xr"})
 xz = tm:Toggle({Name = "Auto Delete Aura", Flag = "xa", Callback = function(v)
-	if v then xw() elseif ge.__FmO then ge.__FmO.st = "Stopped" end
+	if v then afterLoad(xw) elseif ge.__FmO then ge.__FmO.st = "Stopped" end
 end})
 
 local tq = gw:Tab({Name = "Shop", Icon = "shopping-basket"})
@@ -4044,12 +4054,12 @@ tq:Section({Name = "Gacha"})
 tq:Dropdown({Name = "Select Gacha", Options = ga, Default = "Skill Master", Flag = "gk"})
 tq:Dropdown({Name = "Select Roll", Options = {"x1", "x10"}, Default = "x1", Flag = "gr"})
 gs = tq:Toggle({Name = "Auto Roll", Flag = "gs", Callback = function(v)
-	if v then gg() elseif ge.__FmG then ge.__FmG.st = "Stopped" end
+	if v then afterLoad(gg) elseif ge.__FmG then ge.__FmG.st = "Stopped" end
 end})
 tq:Section({Name = "Skill Market"})
 tq:Dropdown({Name = "Select Skills", Options = mz, Default = {}, Multi = true, Flag = "mm"})
 mk = tq:Toggle({Name = "Auto Buy Skill Market", Flag = "ma", Callback = function(v)
-	if v then mg() elseif ge.__FmM then ge.__FmM.st = "Stopped" end
+	if v then afterLoad(mg) elseif ge.__FmM then ge.__FmM.st = "Stopped" end
 end})
 tq:Section({Name = "Rod"})
 tq:Dropdown({Name = "Select Rod", Options = rz, Flag = "rd"})
@@ -4057,7 +4067,7 @@ rk = tq:Toggle({Name = "Auto Buy Rod", Flag = "rb", Callback = function(v)
 	if v then
 		if it then it:Set(false) end
 		if nk then nk:Set(false) end
-		rh()
+		afterLoad(rh)
 	elseif ge.__FmR then ge.__FmR.st = "Stopped" end
 end})
 
@@ -4068,7 +4078,7 @@ it = tl:Toggle({Name = "Auto Island", Flag = "ai", Callback = function(v)
 	if v then
 		if rk then rk:Set(false) end
 		if nk then nk:Set(false) end
-		is()
+		afterLoad(is)
 	elseif ge.__FmI then ge.__FmI.st = "Stopped" end
 end})
 tl:Section({Name = "Boat (Island / NPC / Boss)"})
@@ -4079,7 +4089,7 @@ nk = tl:Toggle({Name = "Teleport To NPC", Flag = "tv", Callback = function(v)
 	if v then
 		if it then it:Set(false) end
 		if rk then rk:Set(false) end
-		ny()
+		afterLoad(ny)
 	elseif ge.__FmT then ge.__FmT.st = "Stopped" end
 end})
 
@@ -5991,3 +6001,4 @@ do local __howf = function()
 	end)
 end
 __howf() end
+ge.__HowLoaded = true
