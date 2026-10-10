@@ -1,66 +1,11 @@
-if not game:IsLoaded() then
-    local loaded = false
-    local ok = pcall(function()
-        game.Loaded:Wait()
-        loaded = true
-    end)
-    if not ok or not loaded then warn("[HowHub] Game load signal failed; continuing startup.") end
-end
+if not game:IsLoaded() then game.Loaded:Wait() end
 
 local ps = game:GetService("Players")
-local lp = ps.LocalPlayer
-local playerDeadline = os.clock() + 15
-while not lp and os.clock() < playerDeadline do
-    task.wait(0.1)
-    lp = ps.LocalPlayer
-end
-if not lp then
-    error("[HowHub] LocalPlayer was not available after 15 seconds.", 0)
-end
+repeat task.wait() until ps.LocalPlayer
 
-local envOk, env = pcall(function()
-    return getrenv()
-end)
-local lpShared = envOk and type(env) == "table" and env.shared or nil
-local lp, rv = lp, lpShared
-if type(rv) ~= "table" then
-    warn("[HowHub] Game shared controllers are not available yet; waiting briefly.")
-    local sharedDeadline = os.clock() + 15
-    repeat
-        task.wait(0.25)
-        envOk, env = pcall(function() return getrenv() end)
-        lpShared = envOk and type(env) == "table" and env.shared or nil
-        rv = lpShared
-    until type(rv) == "table" or os.clock() >= sharedDeadline
-end
-if type(rv) ~= "table" then
-    error("[HowHub] Could not access the game's shared controllers. The game may have updated or this executor may not expose getrenv().", 0)
-end
-
--- The IsLoaded attribute/controller can be absent in some game versions; bound both waits.
-local attributeDeadline = os.clock() + 12
-while lp:GetAttribute("IsLoaded") ~= true and os.clock() < attributeDeadline do
-    task.wait(0.2)
-end
-if lp:GetAttribute("IsLoaded") ~= true then
-    warn("[HowHub] IsLoaded attribute did not become true; continuing with guarded startup.")
-end
-local controllerDeadline = os.clock() + 12
-local controllerReady = false
-while os.clock() < controllerDeadline do
-    local controller = rv.LoadingController
-    if controller and type(controller.IsLoaded) == "function" then
-        local okLoaded, result = pcall(function() return controller:IsLoaded() end)
-        if okLoaded and result == true then
-            controllerReady = true
-            break
-        end
-    end
-    task.wait(0.2)
-end
-if not controllerReady then
-    warn("[HowHub] LoadingController did not report ready within 12 seconds; continuing startup.")
-end
+local lp, rv = ps.LocalPlayer, getrenv().shared
+while lp:GetAttribute("IsLoaded") ~= true do lp:GetAttributeChangedSignal("IsLoaded"):Wait() end
+repeat task.wait(0.1) until rv.LoadingController and rv.LoadingController:IsLoaded()
 
 local qk = {Right = "D", Left = "A", Up = "W"}
 
@@ -287,7 +232,6 @@ local function cz(j, st, why)
 	if cj == j then cj = nil end
 end
 
-local tweenSpeed = 30
 local function mo(p, s, fk)
 	if typeof(p) ~= "Vector3" or p.Magnitude ~= p.Magnitude or p.Magnitude == math.huge then return nil, "Move Failed: Bad Point" end
 	if typeof(fk) == "Vector3" and not (fk.Magnitude > 1e-3) then fk = nil end
@@ -327,7 +271,7 @@ local function gf(f, p, fk)
 		local d = p - r.Position
 		if Vector3.new(d.X, 0, d.Z).Magnitude <= 2 then return true end
 		if f.st ~= "Running" then return nil end
-		local j, e = mo(p, tweenSpeed, fk)
+		local j, e = mo(p, 30, fk)
 		if not j then return nil, e end
 		local dl = os.clock() + d.Magnitude / 30 + 5
 		repeat task.wait() until j.st == "Arrived" or j.dn or f.st ~= "Running" or os.clock() > dl
@@ -715,7 +659,7 @@ local function dv(f, m, id, pt)
 		task.wait(0.2)
 	end
 	local _, r = lc()
-	local hj = r and mo(r.Position, tweenSpeed)
+	local hj = r and mo(r.Position, 30)
 	task.wait(1)
 	if er or not dn then
 		if hj then hj:Stop() end
@@ -2660,16 +2604,6 @@ do
 	ge.__FmNg = dn
 	table.insert(cs, gw.Gui.Destroying:Connect(dn))
 end
-local overlayBossText = "Next Boss: --"
-local cornerOverlay, cornerBossLabel, cornerStatsLabel, cornerStroke
-local cornerLogLabel
-local howHubSessionLog = {}
-local function addHowHubLog(message)
-    local line = os.date("%H:%M:%S") .. "  " .. tostring(message)
-    table.insert(howHubSessionLog, 1, line)
-    while #howHubSessionLog > 8 do table.remove(howHubSessionLog) end
-    if cornerLogLabel then cornerLogLabel.Text = "Recent activity\n" .. table.concat(howHubSessionLog, "\n") end
-end
 local gt, ft = gw:Tab({Name = "General", Icon = "shrimp"}), nil
 
 local xl: {[any]: any} = {}
@@ -3366,7 +3300,6 @@ do
 			return n, md("Data", "Catalog", "Event").Constant.OCCURRENCE_INTERVAL
 		end)
 		if not ok or type(iv) ~= "number" then
-			overlayBossText = "Boss: Unknown"
 			bl:Set("Next Boss: Unknown")
 			return
 		end
@@ -3377,9 +3310,7 @@ do
 				if en[k] then ek, ex = k, math.max(v.expire_at or 0, v.admin_override_expire_at or 0) end
 			end
 			local lf = math.max(0, math.floor((ek and ex or (t // iv + 1) * iv) - t))
-			overlayBossText = ek and `Boss Up: {en[ek]} - {lf // 60}:{string.format("%02d", lf % 60)} Left` or `Next Boss: {os.date("%H:%M", math.floor((t // iv + 1) * iv))} - In {lf // 60}:{string.format("%02d", lf % 60)}`
-			bl:Set(overlayBossText)
-			if cornerBossLabel then cornerBossLabel.Text = overlayBossText end
+			bl:Set(ek and `Boss Up: {en[ek]} - {lf // 60}:{string.format("%02d", lf % 60)} Left` or `Next Boss: {os.date("%H:%M", math.floor((t // iv + 1) * iv))} - In {lf // 60}:{string.format("%02d", lf % 60)}`)
 			task.wait(1)
 		end
 	end)
@@ -3388,18 +3319,14 @@ gt:Dropdown({Name = "Select Farm Island", Options = iz, Flag = "fi"})
 ft = gt:Toggle({Name = "Auto Fish", Flag = "af", Callback = function(v)
 	local o = ge.__FmF
 	if v then
-        addHowHubLog("Auto Fish enabled")
 		fs()
 	elseif o then
-        addHowHubLog("Auto Fish disabled")
 		if o.bz and (o.s.fp or o.s.rl) and not (o.s.cr or o.s.rr) then o.fq = true else o.st = "Stopped" end
 	end
 end})
-
 gt:Toggle({Name = "Auto Boss", Flag = "ab"})
 
 -- Auto-lock fish of selected rarities to protect them from accidental selling.
-gt:Section({Name = "Lock Fish"})
 do
     local lockRarities, lockWorker = {}, nil
     gt:Dropdown({Name = "Lock Fish Rarity", Options = ra, Default = {}, Multi = true, Flag = "lfr", Callback = function(v)
@@ -3500,8 +3427,6 @@ rk = tq:Toggle({Name = "Auto Buy Rod", Flag = "rb", Callback = function(v)
 end})
 
 local tl = gw:Tab({Name = "Teleport", Icon = "person-teleport"})
-tl:Section({Name = "Boat (shared with Boss)"})
-tl:Dropdown({Name = "Select Boat", Options = bn, Default = "Truck", Flag = "sb"})
 tl:Section({Name = "Island"})
 tl:Dropdown({Name = "Select Island", Options = iz, Flag = "si"})
 it = tl:Toggle({Name = "Auto Island", Flag = "ai", Callback = function(v)
@@ -4312,410 +4237,5 @@ local function iq()
 		task.wait(1)
 	end
 end
-
-
--- Extra controls requested: player movement, fishing session stats, tween speed and UI accent.
-local tp = gw:Tab({Name = "Played", Icon = "person-standing"})
-tp:Section({Name = "Movement"})
-local moveSpeed, jumpPower = 16, 50
-local movementEnabled, infJump, noClip = false, false, false
-local noclipOriginal = {}
-local function getHumanoid()
-    local c = lp.Character
-    return c and c:FindFirstChildOfClass("Humanoid")
-end
-local function applyMovement()
-    local h = getHumanoid()
-    if h then
-        h.WalkSpeed = moveSpeed
-        h.UseJumpPower = true
-        h.JumpPower = jumpPower
-    end
-end
-tp:Toggle({Name = "Enable Speed / Jump", Flag = "played_move", Callback = function(v)
-    movementEnabled = v == true
-    if movementEnabled then applyMovement() else
-        local h = getHumanoid()
-        if h then h.WalkSpeed, h.JumpPower = 16, 50 end
-    end
-end})
-tp:Slider({Name = "Speed", Min = 1, Max = 150, Step = 1, Default = 16, Flag = "played_speed", Callback = function(v)
-    moveSpeed = v
-    if movementEnabled then applyMovement() end
-end})
-tp:Slider({Name = "Jump Power", Min = 1, Max = 200, Step = 1, Default = 50, Flag = "played_jump", Callback = function(v)
-    jumpPower = v
-    if movementEnabled then applyMovement() end
-end})
-tp:Keybind({Name = "Speed + key", Default = Enum.KeyCode.RightBracket, Callback = function()
-    moveSpeed = math.clamp(moveSpeed + 2, 1, 150)
-    if movementEnabled then applyMovement() end
-end})
-tp:Keybind({Name = "Speed - key", Default = Enum.KeyCode.LeftBracket, Callback = function()
-    moveSpeed = math.clamp(moveSpeed - 2, 1, 150)
-    if movementEnabled then applyMovement() end
-end})
-tp:Keybind({Name = "Jump + key", Default = Enum.KeyCode.Equals, Callback = function()
-    jumpPower = math.clamp(jumpPower + 5, 1, 200)
-    if movementEnabled then applyMovement() end
-end})
-tp:Keybind({Name = "Jump - key", Default = Enum.KeyCode.Minus, Callback = function()
-    jumpPower = math.clamp(jumpPower - 5, 1, 200)
-    if movementEnabled then applyMovement() end
-end})
-tp:Toggle({Name = "InfJump", Flag = "played_infjump", Callback = function(v) infJump = v == true end})
-tp:Toggle({Name = "Noclip", Flag = "played_noclip", Callback = function(v)
-    noClip = v == true
-    if not noClip then
-        for part, old in noclipOriginal do pcall(function() if part.Parent then part.CanCollide = old end end) end
-        table.clear(noclipOriginal)
-    end
-end})
-tp:TextBox({Name = "Name Above Head", Placeholder = "Enter display name", Flag = "played_headname", Callback = function(v)
-    local h = getHumanoid()
-    if h and type(v) == "string" and v ~= "" then h.DisplayName = v end
-end})
-local uisPlayed = game:GetService("UserInputService")
-local runPlayed = game:GetService("RunService")
-local playedConnections = {}
-table.insert(playedConnections, uisPlayed.JumpRequest:Connect(function()
-    if infJump then
-        local h = getHumanoid()
-        if h then h:ChangeState(Enum.HumanoidStateType.Jumping) end
-    end
-end))
-table.insert(playedConnections, runPlayed.Stepped:Connect(function()
-    if not noClip then return end
-    local c = lp.Character
-    for _, part in c and c:GetDescendants() or {} do
-        if part:IsA("BasePart") then
-            if noclipOriginal[part] == nil then noclipOriginal[part] = part.CanCollide end
-            part.CanCollide = false
-        end
-    end
-end))
-table.insert(playedConnections, lp.CharacterAdded:Connect(function()
-    task.wait(0.5)
-    if movementEnabled then applyMovement() end
-end))
-
--- Session stats toggle: elapsed time, coins gained since enabling, and cumulative fish caught.
-gt:Section({Name = "Fishing Stats"})
-local fishStatsLabel = gt:Label({Text = "Time, money earned, and total fish caught appear in the corner overlay."})
-local fishStatsEnabled, fishStatsStart, fishStatsCoin = false, 0, 0
--- Cumulative count: once a fish is caught, selling it does not reduce this total.
--- Preserve the counter across script reruns in the same executor session.
-local statsEnv = getgenv()
-local totalFishCaught = tonumber(statsEnv.__HowHubTotalFishCaught)
-if totalFishCaught == nil then
-    totalFishCaught = 0
-    local ok, d = pcall(pd)
-    if ok and d and d.Inventory and d.Inventory.Fishes then
-        for _ in d.Inventory.Fishes do totalFishCaught += 1 end
-    end
-    statsEnv.__HowHubTotalFishCaught = totalFishCaught
-end
-local fishCatchStatsConnection
-pcall(function()
-    if statsEnv.__HowHubFishCatchConnection then
-        statsEnv.__HowHubFishCatchConnection:Disconnect()
-        statsEnv.__HowHubFishCatchConnection = nil
-    end
-    fishCatchStatsConnection = rv.FishingController.FishCatchResult.OnClientEvent:Connect(function(caught)
-        if caught == true then
-            totalFishCaught += 1
-            statsEnv.__HowHubTotalFishCaught = totalFishCaught
-        end
-    end)
-    statsEnv.__HowHubFishCatchConnection = fishCatchStatsConnection
-end)
-gt:Toggle({Name = "Show Fishing Time / Money / Fish Count", Flag = "fish_stats", Callback = function(v)
-    fishStatsEnabled = v == true
-    if fishStatsEnabled then
-        fishStatsStart = os.clock()
-        local ok, d = pcall(pd)
-        fishStatsCoin = ok and d and tonumber(d.Coin) or 0
-    end
-    if cornerStatsLabel then cornerStatsLabel.Visible = fishStatsEnabled end
-end})
-
--- Independent corner overlay: it lives in PlayerGui, not inside the main hub, so hiding the hub won't hide this panel.
-do
-    local pg = lp:WaitForChild("PlayerGui")
-    local old = pg:FindFirstChild("HowHubCornerOverlay")
-    if old then old:Destroy() end
-    cornerOverlay = Instance.new("ScreenGui")
-    cornerOverlay.Name = "HowHubCornerOverlay"
-    cornerOverlay.ResetOnSpawn = false
-    cornerOverlay.IgnoreGuiInset = false
-    cornerOverlay.DisplayOrder = 10001
-    cornerOverlay.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    cornerOverlay.Parent = pg
-
-    local panel = Instance.new("Frame")
-    panel.Name = "Panel"
-    panel.AnchorPoint = Vector2.new(1, 0)
-    panel.Position = UDim2.new(1, -12, 0, 12)
-    panel.Size = UDim2.fromOffset(290, 0)
-    panel.AutomaticSize = Enum.AutomaticSize.Y
-    panel.BackgroundColor3 = Color3.fromRGB(17, 25, 40)
-    panel.BackgroundTransparency = 0.08
-    panel.BorderSizePixel = 0
-    panel.Parent = cornerOverlay
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 9)
-    corner.Parent = panel
-    cornerStroke = Instance.new("UIStroke")
-    cornerStroke.Color = Color3.fromRGB(85, 145, 255)
-    cornerStroke.Thickness = 1.5
-    cornerStroke.Parent = panel
-    local padding = Instance.new("UIPadding")
-    padding.PaddingTop = UDim.new(0, 9)
-    padding.PaddingBottom = UDim.new(0, 9)
-    padding.PaddingLeft = UDim.new(0, 11)
-    padding.PaddingRight = UDim.new(0, 11)
-    padding.Parent = panel
-    local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 5)
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.Parent = panel
-
-    local function makeOverlayLabel(order, size, bold)
-        local label = Instance.new("TextLabel")
-        label.BackgroundTransparency = 1
-        label.Size = UDim2.new(1, 0, 0, size + 5)
-        label.Font = bold and Enum.Font.GothamBold or Enum.Font.GothamMedium
-        label.TextSize = size
-        label.TextColor3 = Color3.fromRGB(230, 239, 255)
-        label.TextXAlignment = Enum.TextXAlignment.Left
-        label.TextYAlignment = Enum.TextYAlignment.Center
-        label.TextWrapped = true
-        label.LayoutOrder = order
-        label.Parent = panel
-        return label
-    end
-    cornerBossLabel = makeOverlayLabel(1, 13, true)
-    cornerBossLabel.Text = overlayBossText
-    -- Drag the floating panel by holding its header (boss timer row).
-    local dragging, dragStart, startPos = false, nil, nil
-    cornerBossLabel.Active = true
-    cornerBossLabel.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging, dragStart, startPos = true, input.Position, panel.Position
-        end
-    end)
-    cornerBossLabel.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
-    end)
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and dragStart and startPos then
-            local delta = input.Position - dragStart
-            panel.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end)
-    cornerStatsLabel = makeOverlayLabel(2, 12, false)
-    cornerStatsLabel.Text = "Fishing: Off"
-    cornerStatsLabel.Visible = fishStatsEnabled
-    cornerDamageLabel = makeOverlayLabel(3, 12, true)
-    cornerDamageLabel.Text = "Damage: 0  |  DPS: 0"
-    cornerDamageLabel.Visible = true
-    cornerLogLabel = makeOverlayLabel(4, 10, false)
-    cornerLogLabel.Name = "RecentActivity"
-    cornerLogLabel.Text = "Recent activity\nNo events yet"
-    cornerLogLabel.Visible = false
-end
-
-
--- Damage/DPS monitor: tracks observed NPC humanoid health loss in a rolling 5-second window.
--- Roblox does not expose reliable damage attribution universally, so this is observed damage, not guaranteed player-only damage.
-local damageEvents = {}
-local observedDamageTotal = 0
-local watchedHumanoids = {}
-local function watchDamageHumanoid(humanoid)
-    if not humanoid or not humanoid:IsA("Humanoid") or watchedHumanoids[humanoid] then return end
-    local model = humanoid.Parent
-    if model and lp.Character and model == lp.Character then return end
-    watchedHumanoids[humanoid] = true
-    local lastHealth = humanoid.Health
-    humanoid.HealthChanged:Connect(function(newHealth)
-        local lost = math.max(0, lastHealth - newHealth)
-        lastHealth = newHealth
-        if lost > 0 then
-            local now = os.clock()
-            table.insert(damageEvents, {time = now, amount = lost})
-            observedDamageTotal += lost
-        end
-    end)
-end
-for _, obj in ipairs(workspace:GetDescendants()) do
-    if obj:IsA("Humanoid") then watchDamageHumanoid(obj) end
-end
-workspace.DescendantAdded:Connect(function(obj)
-    if obj:IsA("Humanoid") then watchDamageHumanoid(obj) end
-end)
-
-task.spawn(function()
-    while cornerOverlay and cornerOverlay.Parent do
-        if fishStatsEnabled and cornerStatsLabel then
-            local elapsed = math.max(0, math.floor(os.clock() - fishStatsStart))
-            local ok, d = pcall(pd)
-            local coin = ok and d and tonumber(d.Coin) or fishStatsCoin
-            local earned = math.max(0, coin - fishStatsCoin)
-            cornerStatsLabel.Text = ("Time: %02d:%02d:%02d  |  Money: +%s  |  Fish caught: %d"):format(math.floor(elapsed/3600), math.floor(elapsed/60)%60, elapsed%60, tostring(math.floor(earned)), totalFishCaught)
-            cornerStatsLabel.Visible = true
-        elseif cornerStatsLabel then
-            cornerStatsLabel.Visible = false
-        end
-        local now = os.clock()
-        local recentDamage = 0
-        for i = #damageEvents, 1, -1 do
-            if now - damageEvents[i].time > 5 then
-                table.remove(damageEvents, i)
-            else
-                recentDamage += damageEvents[i].amount
-            end
-        end
-        if cornerDamageLabel then
-            cornerDamageLabel.Text = ("Damage: %s  |  DPS: %s"):format(tostring(math.floor(observedDamageTotal)), tostring(math.floor(recentDamage / 5)))
-        end
-        task.wait(1)
-    end
-end)
-
--- Tween movement speed is adjustable and saved by the built-in config system.
-ts:Section({Name = "Config"})
-ts:Slider({Name = "Tween Speed", Min = 5, Max = 120, Step = 1, Default = 30, Flag = "tween_speed", Callback = function(v)
-    tweenSpeed = v
-end})
-
--- UI color presets: the main hub and the corner overlay can be colored independently.
-local accentPresets = {"Blue", "Purple", "Green", "Red", "Orange", "Pink", "Cyan", "Teal", "Yellow", "White", "Magenta", "Lime", "Gold", "Black", "Gray"}
-local accentColors = {
-    Blue = Color3.fromRGB(85, 145, 255),
-    Purple = Color3.fromRGB(166, 110, 255),
-    Green = Color3.fromRGB(70, 200, 135),
-    Red = Color3.fromRGB(240, 85, 95),
-    Orange = Color3.fromRGB(255, 155, 65),
-    Pink = Color3.fromRGB(255, 105, 180),
-    Cyan = Color3.fromRGB(0, 220, 255),
-    Teal = Color3.fromRGB(0, 190, 170),
-    Yellow = Color3.fromRGB(255, 225, 65),
-    White = Color3.fromRGB(245, 248, 255),
-    Magenta = Color3.fromRGB(225, 50, 220),
-    Lime = Color3.fromRGB(155, 235, 55),
-    Gold = Color3.fromRGB(255, 190, 35),
-    Black = Color3.fromRGB(35, 38, 45),
-    Gray = Color3.fromRGB(145, 155, 170)
-}
-ts:Section({Name = "UI"})
-local function applyAccent(name)
-    local color = accentColors[name] or accentColors.Blue
-    for _, obj in gw.Gui:GetDescendants() do
-        if obj:IsA("UIStroke") then
-            if obj.Thickness <= 2 then obj.Color = color end
-        elseif obj:IsA("Frame") and obj.Name == "Fill" then
-            obj.BackgroundColor3 = color
-        end
-    end
-end
-local function applyCornerAccent(name)
-    local color = accentColors[name] or accentColors.Blue
-    if cornerStroke then cornerStroke.Color = color end
-end
-ts:Dropdown({Name = "Main UI Color", Options = accentPresets, Default = "Blue", Flag = "ui_color", Callback = applyAccent})
-ts:Dropdown({Name = "Small UI Color", Options = accentPresets, Default = "Blue", Flag = "corner_ui_color", Callback = applyCornerAccent})
-
--- Independent transparency controls (1% = nearly opaque, 100% = fully transparent).
-local transparencyBases = setmetatable({}, {__mode = "k"})
-local function applyGuiTransparency(root, percent)
-    if not root then return end
-    local amount = math.clamp((tonumber(percent) or 8) / 100, 0.01, 1)
-    local function applyOne(obj)
-        local props = {}
-        if obj:IsA("GuiObject") then
-            props.BackgroundTransparency = obj.BackgroundTransparency
-            if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
-                props.TextTransparency = obj.TextTransparency
-                props.TextStrokeTransparency = obj.TextStrokeTransparency
-            end
-            if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then props.ImageTransparency = obj.ImageTransparency end
-        elseif obj:IsA("UIStroke") then
-            props.Transparency = obj.Transparency
-        end
-        if next(props) then
-            local base = transparencyBases[obj]
-            if not base then
-                base = props
-                transparencyBases[obj] = base
-            end
-            for prop, original in pairs(base) do
-                pcall(function() obj[prop] = original + (1 - original) * amount end)
-            end
-        end
-    end
-    applyOne(root)
-    for _, obj in ipairs(root:GetDescendants()) do applyOne(obj) end
-end
-
-ts:Slider({Name = "Main UI Transparency (%)", Min = 1, Max = 100, Step = 1, Default = 8, Flag = "main_ui_transparency", Callback = function(v)
-    applyGuiTransparency(gw.Gui, v)
-end})
-ts:Slider({Name = "Small UI Transparency (%)", Min = 1, Max = 100, Step = 1, Default = 8, Flag = "small_ui_transparency", Callback = function(v)
-    applyGuiTransparency(cornerOverlay, v)
-end})
--- UI controls: independent overlay size, drag-to-move, and a recent-activity feed.
-ts:Slider({Name = "Small UI Size (%)", Min = 70, Max = 160, Step = 5, Default = 100, Flag = "small_ui_size", Callback = function(v)
-    if cornerOverlay then
-        local panel = cornerOverlay:FindFirstChild("Panel")
-        if panel then
-            panel.Size = UDim2.fromOffset(math.floor(290 * v / 100), panel.Size.Y.Offset)
-            for _, obj in ipairs(panel:GetChildren()) do
-                if obj:IsA("TextLabel") then obj.TextSize = math.clamp(math.floor((obj.Name == "RecentActivity" and 10 or 12) * v / 100), 8, 22) end
-            end
-        end
-    end
-end})
-ts:Toggle({Name = "Show Recent Activity (Small UI)", Default = false, Flag = "show_activity_log", Callback = function(v)
-    if cornerLogLabel then cornerLogLabel.Visible = v == true end
-end})
-
--- Presets update saved configuration flags; they do not force unsupported game actions.
-ts:Dropdown({Name = "Farm Preset", Options = {"Balanced", "Fishing Focus", "Boss Focus", "Manual"}, Default = "Balanced", Flag = "farm_preset", Callback = function(v)
-    if v == "Fishing Focus" then
-        L.Flags.af = true
-        L.Flags.ab = false
-        addHowHubLog("Preset selected: Fishing Focus")
-    elseif v == "Boss Focus" then
-        L.Flags.ab = true
-        addHowHubLog("Preset selected: Boss Focus")
-    elseif v == "Balanced" then
-        L.Flags.af = true
-        L.Flags.ab = true
-        addHowHubLog("Preset selected: Balanced")
-    else
-        addHowHubLog("Preset selected: Manual")
-    end
-end})
-
--- Hotkeys for the main window and floating stats panel.
-tp:Keybind({Name = "Toggle Main UI", Default = Enum.KeyCode.RightControl, Callback = function()
-    if gw.Gui then gw.Gui.Enabled = not gw.Gui.Enabled end
-    addHowHubLog("Main UI toggled")
-end})
-tp:Keybind({Name = "Toggle Small UI", Default = Enum.KeyCode.RightAlt, Callback = function()
-    if cornerOverlay then cornerOverlay.Enabled = not cornerOverlay.Enabled end
-    addHowHubLog("Small UI toggled")
-end})
-tp:Keybind({Name = "Toggle Fishing Stats", Default = Enum.KeyCode.F6, Callback = function()
-    fishStatsEnabled = not fishStatsEnabled
-    if cornerStatsLabel then cornerStatsLabel.Visible = fishStatsEnabled end
-    addHowHubLog(fishStatsEnabled and "Fishing stats enabled" or "Fishing stats disabled")
-end})
-
--- Both UI color selectors default to blue.
-applyAccent("Blue")
-applyCornerAccent("Blue")
-applyGuiTransparency(gw.Gui, 8)
-applyGuiTransparency(cornerOverlay, 8)
 
 task.spawn(iq)
