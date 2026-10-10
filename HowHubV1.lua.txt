@@ -1072,7 +1072,7 @@ local function br(f)
 		return nil, n
 	end
 	local x, n = fd()
-	if x or n >= 12 or os.clock() < (f.sc or 0) then return x end
+	if x or n >= 12 or os.clock() < (f.bscan or 0) then return x end
 	for _, z in game:GetService("CollectionService"):GetTagged("IslandRegion") do
 		if f.st ~= "Running" then break end
 		if z:IsA("BasePart") then
@@ -1081,7 +1081,7 @@ local function br(f)
 			if x then return x end
 		end
 	end
-	f.sc = os.clock() + 5
+	f.bscan = os.clock() + 5
 	return nil
 end
 
@@ -1196,6 +1196,7 @@ local function bo(f)
 	if os.clock() < (f.bl or 0) then return nil end
 	local x = br(f)
 	if not x then return nil end
+	f.bt = os.clock()
 	local id, q = x.Parent and x.Parent.Parent and x.Parent.Parent.Name, Vector3.new(x.Position.X, 3, x.Position.Z)
 	local _, r, h = lc()
 	if not r then return nil, "No Character" end
@@ -1606,7 +1607,7 @@ local function ss(f)
 		f.bm, f.rp = nil, true
 		if cj then cj:Stop() end
 	end
-	if be then return nil, be end
+	if be then f.bl = os.clock() + 10; return nil, be end
 	if not bp and f.bb then f.bb, f.rp = false, true end
 	if not bp and f.hm then
 		local o, oi = f.hm[1], f.hm[2]
@@ -1821,8 +1822,21 @@ local function rn(f)
 			continue
 		end
 		f.bz = true
-		local hd, sf = ss(f)
+		local ok0, hd, sf = xpcall(ss, function(x) return debug.traceback(tostring(x), 2) end, f)
 		f.bz = false
+		if not ok0 then
+			-- Unexpected error (often at boss time): log it, back off the boss, keep fishing.
+			zx(`[Auto Fish] Error: {hd}`)
+			sf, hd = tostring(hd):match("^[^\n]+") or "Error", nil
+			f.bl = os.clock() + 60
+			if f.st == "Running" and cj then cj:Stop() end
+		end
+		if hd and (f.bu or f.bb or f.hm or os.clock() - (f.bt or 0) < 30) and not hd:find("No Skill Equipped") and not (hd:find("Satchel Full") and not f.ao()) then
+			-- Boss problems must never turn Auto Fish off.
+			zx(`[Boss] {hd}, Boss Skipped 180 s`)
+			f.bl, f.rp, sf, hd = os.clock() + 180, true, hd, nil
+			if cj then cj:Stop() end
+		end
 		if hd then f.why = hd; return end
 		n = sf and n + 1 or 0
 		if n >= 5 then
