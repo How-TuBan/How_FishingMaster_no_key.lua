@@ -2719,11 +2719,15 @@ function L:Window(o)
 			reg[l] = T.sec; l.Text = tr(T.sec)
 			local so = {rows = {}, col = false}
 			T.cs = so
-			local ar = tl({Text = "^", Font = fb, TextSize = 14, TextColor3 = c.dm, AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -4, 1, -2), Size = UDim2.fromOffset(24, 22), TextXAlignment = Enum.TextXAlignment.Center, Parent = l})
+			-- Collapse arrow: a small accent pill with a chevron icon (rotates when collapsed)
+			local pill = mk("Frame", {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -6, 0.5, 0), Size = UDim2.fromOffset(28, 20), BackgroundColor3 = c.ac, BackgroundTransparency = 0.85, BorderSizePixel = 0, Parent = l}, {rc(6)})
+			local ar = ig({Text = "chevron-down", TextSize = 16, TextColor3 = c.ac, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(20, 20), TextXAlignment = Enum.TextXAlignment.Center, Parent = pill})
 			local hb = bt({Size = UDim2.fromScale(1, 1), ZIndex = 2, Parent = l})
+			hb.MouseEnter:Connect(function() tw(pill, {BackgroundTransparency = 0.65}, 0.12) end)
+			hb.MouseLeave:Connect(function() tw(pill, {BackgroundTransparency = 0.85}, 0.12) end)
 			function so.set(v)
 				so.col = v
-				ar.Text = v and "v" or "^"
+				tw(ar, {Rotation = v and -90 or 0}, 0.15)
 				for _, r in so.rows do r.Visible = not v end
 				task.defer(W.fd)
 			end
