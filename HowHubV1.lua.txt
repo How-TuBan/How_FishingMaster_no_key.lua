@@ -1942,6 +1942,8 @@ L.Dict = {VI = {
     ["Reset Time / Fish / Money"] = "Đặt lại Thời gian / Cá / Tiền",
     ["Lock Fish Rarity"] = "Độ hiếm cá cần khóa",
     ["Auto Lock Fish"] = "Tự động khóa cá",
+    ["Lock Specific Fish"] = "Cá cụ thể cần khóa",
+    ["Auto Lock Specific Fish"] = "Tự động khóa cá cụ thể",
     ["Select Rod Quest"] = "Chọn nhiệm vụ cần câu",
     ["Auto Rod Quest"] = "Tự động nhiệm vụ cần câu",
     ["Auto Unlock Island"] = "Tự động mở khóa đảo",
@@ -2067,6 +2069,33 @@ L.Dict = {VI = {
 }}
 L.Subs = {VI = {{"Locked", "Đã khóa"}, {" Left$", " còn lại"}, {"%- In ", "- sau "}, {"Accepted", "Đã nhận"}, {"| Avg:", "| TB:"}}}
 
+
+do
+	local add = {
+		["Collapse all"] = "Thu gọn tất cả", ["Expand all"] = "Mở rộng tất cả",
+		["Cancel"] = "Hủy", ["Enable"] = "Bật", ["Pinned"] = "Đã ghim", ["Unpinned"] = "Đã bỏ ghim",
+		["Favorites"] = "Yêu thích", ["Loading..."] = "Đang tải...", ["Ready"] = "Sẵn sàng",
+		["Active"] = "Đang bật", ["Interface"] = "Giao diện", ["Presets"] = "Cấu hình mẫu",
+		["Intro Animation"] = "Animation khởi động", ["Open / Close Animation"] = "Animation mở / đóng UI",
+		["Section Animation"] = "Animation thu gọn mục", ["Section Arrow Style"] = "Kiểu nút mũi tên",
+		["Section Header Size"] = "Cỡ thanh tiêu đề mục", ["Notifications"] = "Thông báo",
+		["UI Toggle Key"] = "Phím ẩn / hiện UI", ["Reset Risk Warnings"] = "Đặt lại cảnh báo rủi ro",
+		["Collapse All Sections"] = "Thu gọn tất cả mục", ["Expand All Sections"] = "Mở rộng tất cả mục",
+		["Preset Slot"] = "Ô cấu hình", ["Save To Slot"] = "Lưu vào ô", ["Load Slot"] = "Tải ô", ["Clear Slot"] = "Xóa ô",
+		["Mini: Active Features"] = "Mini: Số chức năng đang bật",
+		["Feature To Pin"] = "Chức năng cần ghim", ["Pin Selected"] = "Ghim mục đã chọn",
+		["Unpin Selected"] = "Bỏ ghim mục đã chọn", ["Clear All Pins"] = "Xóa tất cả ghim",
+		["Right-click any feature (PC) or use the picker below to pin it here. Tap x to unpin."] = "Chuột phải vào chức năng (PC) hoặc dùng ô chọn bên dưới để ghim vào đây. Bấm x để bỏ ghim.",
+		["Normal"] = "Bình thường", ["Short"] = "Ngắn", ["Compact"] = "Gọn", ["Large"] = "Lớn",
+		["Pill + Chevron"] = "Nút tròn + mũi tên", ["Chevron Only"] = "Chỉ mũi tên", ["Plus / Minus"] = "Dấu + / -",
+		["This feature changes your character's movement and can be detected by the game. Enable anyway?"] = "Chức năng này thay đổi chuyển động nhân vật và có thể bị game phát hiện. Vẫn bật?",
+		["Automatic teleporting can be detected by the game and may get your account flagged. Enable anyway?"] = "Dịch chuyển tự động có thể bị game phát hiện và khiến tài khoản bị gắn cờ. Vẫn bật?",
+	}
+	for k, v in add do
+		if L.Dict.VI[k] == nil then L.Dict.VI[k] = v end
+	end
+end
+
 L.Info = {
 EN = {
 ["Select Farm Island"] = "Choose the island you want to farm fish on.",
@@ -2078,6 +2107,8 @@ EN = {
 ["Reset Time / Fish / Money"] = "Sets the fishing time, fish count, money and damage counters back to zero.",
 ["Lock Fish Rarity"] = "Choose which fish rarities should be locked so they are protected.",
 ["Auto Lock Fish"] = "Automatically locks fish of the selected rarities.",
+["Lock Specific Fish"] = "Pick individual fish by name. Any fish with that name is locked, whatever its rarity.",
+["Auto Lock Specific Fish"] = "Automatically locks every fish you picked in Lock Specific Fish.",
 ["Select Rod Quest"] = "Choose which rod quest to work on.",
 ["Auto Rod Quest"] = "Automatically progresses the selected rod quest.",
 ["Auto Unlock Island"] = "Automatically works toward unlocking islands.",
@@ -2163,6 +2194,8 @@ VI = {
 ["Reset Time / Fish / Money"] = "Đặt lại thời gian câu, số cá, tiền và sát thương về 0.",
 ["Lock Fish Rarity"] = "Chọn độ hiếm của cá cần khóa để được bảo vệ.",
 ["Auto Lock Fish"] = "Tự động khóa cá thuộc các độ hiếm đã chọn.",
+["Lock Specific Fish"] = "Chọn từng loài cá theo tên. Cá nào trùng tên sẽ được khóa, bất kể độ hiếm.",
+["Auto Lock Specific Fish"] = "Tự động khóa mọi loài cá bạn đã chọn trong Cá cụ thể cần khóa.",
 ["Select Rod Quest"] = "Chọn nhiệm vụ cần câu muốn làm.",
 ["Auto Rod Quest"] = "Tự động làm nhiệm vụ cần câu đã chọn.",
 ["Auto Unlock Island"] = "Tự động làm để mở khóa các đảo.",
@@ -2420,6 +2453,9 @@ function L:Window(o)
 		if n.Title == nil and n.Text == nil then error("Notify Failed: No Text", 0) end
 		local t = n.Time == nil and 4 or n.Time
 		if type(t) ~= "number" or t ~= t or t <= 0 then error("Notify Failed: Bad Time", 0) end
+		local nmode = L.Flags.nmode
+		if nmode == "Off" and not n.Error and not n.Strong then return nil end
+		if nmode == "Short" then t = math.min(t, 2) end
 		local f = mk("Frame", {Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = c.cd, BorderSizePixel = 0, ZIndex = 100, Parent = tsf}, {rc(8), sk(0.9), pd(18, 14, 10, 10)})
 		mk("Frame", {Position = UDim2.fromOffset(-12, 2), Size = UDim2.new(0, 3, 1, -4), BackgroundColor3 = n.Error and c.er or c.ac, BorderSizePixel = 0, ZIndex = 101, Parent = f}, {rc(2)})
 		local lay = mk("Frame", {Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, ZIndex = 101, Parent = f}, {ll(2)})
@@ -2427,6 +2463,14 @@ function L:Window(o)
 		if n.Text ~= nil then tl({Text = tostring(n.Text), TextSize = n.Strong and 14 or 13, Font = n.Strong and fb or fn, TextColor3 = n.Strong and c.tx or c.dm, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, TextWrapped = true, ZIndex = 102, LayoutOrder = 2, Parent = lay}) end
 		local us = mk("UIScale", {Scale = 0.9, Parent = f})
 		tw(us, {Scale = 1})
+		f.InputBegan:Connect(function(i)
+			if (i.UserInputType == mb or i.UserInputType == tc) and f.Parent then f:Destroy() end
+		end)
+		local kids = {}
+		for _, x in tsf:GetChildren() do
+			if x:IsA("Frame") then table.insert(kids, x) end
+		end
+		while #kids > 4 do table.remove(kids, 1):Destroy() end
 		task.delay(t, function() if f.Parent then f:Destroy() end end)
 		return f
 	end
@@ -2476,11 +2520,128 @@ function L:Window(o)
 		end)
 	end
 
-	local nv = mk("Frame", {Position = UDim2.fromOffset(12, th + 4), Size = UDim2.new(0, nw, 1, -(th + 16)), BackgroundTransparency = 1, Parent = mn})
+	
+	-- ===== UI extras: persistent store, confirm dialog, section helpers =====
+	local function mark()
+		dirty = true
+		if pend or dead then return end
+		pend = true
+		task.delay(0.5, function() pend = false; save() end)
+	end
+	function W:GetStore(k) return cd["~" .. tostring(k)] end
+	function W:SetStore(k, v) cd["~" .. tostring(k)] = v; mark() end
+	function W:ResetStore(prefix)
+		local ks = {}
+		for k in cd do
+			if type(k) == "string" and k:sub(1, #prefix + 1) == "~" .. prefix then table.insert(ks, k) end
+		end
+		for _, k in ks do cd[k] = nil end
+		mark()
+	end
+	W.colmap = type(cd["~col"]) == "table" and cd["~col"] or {}
+	W.scr = type(cd["~scr"]) == "table" and cd["~scr"] or {}
+	W.lastTab = type(cd["~tab"]) == "string" and cd["~tab"] or nil
+	W.secs, W.hdrH, W.arrow, W.vg, W.shown = {}, 30, nil, 0, true
+	local scrPend = false
+	function W.scrSave()
+		if scrPend or dead then return end
+		scrPend = true
+		task.delay(1.5, function()
+			scrPend = false
+			if not dead then W:SetStore("scr", W.scr) end
+		end)
+	end
+	local function counted(e)
+		return e.Kind == "Toggle" and e.v == true and not tostring(e.Name):find("^Show ") and not tostring(e.Name):find("^Mini:")
+	end
+	function W:CountActive()
+		local n = 0
+		for _, T in W.Tabs do
+			if T.Name ~= "Setting" and T.Name ~= "Favorites" then
+				for _, e in T.Rows do
+					if counted(e) then n = n + 1 end
+				end
+			end
+		end
+		return n
+	end
+	function W:SetArrowStyle(st)
+		W.arrow = st
+		for _, so in W.secs do so.draw(false) end
+	end
+	function W:SetHeaderSize(nm)
+		local h = nm == "Compact" and 26 or (nm == "Large" and 38 or 30)
+		W.hdrH = h
+		for _, so in W.secs do so.size(h) end
+	end
+	function W:CollapseAll(v)
+		for _, so in W.secs do so.set(v) end
+	end
+	function W:Snapshot()
+		local out = {}
+		for _, T in W.Tabs do
+			if T.Name ~= "Setting" and T.Name ~= "Favorites" then
+				for _, e in T.Rows do
+					if e.Flag and e.Get then
+						local ok, v = pcall(function() return e:Get() end)
+						if ok then
+							if e.sv then v = e.sv(v) end
+							if v ~= nil then out[e.Flag] = v end
+						end
+					end
+				end
+			end
+		end
+		return out
+	end
+	function W:ApplySnapshot(snap)
+		local n = 0
+		for _, T in W.Tabs do
+			if T.Name ~= "Setting" and T.Name ~= "Favorites" then
+				for _, e in T.Rows do
+					if e.Flag and e.Set and snap[e.Flag] ~= nil then
+						local v = snap[e.Flag]
+						local ok = pcall(function()
+							if e.ld then v = e.ld(v) end
+							e:Set(v)
+						end)
+						if ok then n = n + 1 end
+					end
+				end
+			end
+		end
+		return n
+	end
+	function W:Confirm(title, text, onYes)
+		if W.cfm and W.cfm.Parent then W.cfm:Destroy() end
+		local d = bt({Name = "Confirm", Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.4, ZIndex = 70, Parent = mn}, {rc(12)})
+		d:SetAttribute("NoTheme", true)
+		W.cfm = d
+		local card = mk("Frame", {Active = true, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(300, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = c.cd, BorderSizePixel = 0, ZIndex = 71, Parent = d}, {rc(10), sk(0.5, c.ac), pd(16, 16, 14, 14), ll(10)})
+		tl({Text = tr(title), Font = fb, TextSize = 16, TextColor3 = c.ac, Size = UDim2.new(1, 0, 0, 20), TextTruncate = Enum.TextTruncate.AtEnd, ZIndex = 72, LayoutOrder = 1, Parent = card})
+		tl({Text = tr(text), TextSize = 13, TextColor3 = c.dm, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, TextWrapped = true, ZIndex = 72, LayoutOrder = 2, Parent = card})
+		local br = mk("Frame", {Size = UDim2.new(1, 0, 0, 34), BackgroundTransparency = 1, ZIndex = 72, LayoutOrder = 3, Parent = card})
+		local function btn(txt, right, col, tcol, cb)
+			local b = bt({AnchorPoint = Vector2.new(right and 1 or 0, 0), Position = UDim2.new(right and 1 or 0, 0, 0, 0), Size = UDim2.new(0.5, -4, 1, 0), BackgroundColor3 = col, BackgroundTransparency = 0, Font = fb, TextSize = 13, TextColor3 = tcol, Text = tr(txt), ZIndex = 72, Parent = br}, {rc(6)})
+			b.Activated:Connect(function()
+				d:Destroy()
+				if cb then cb() end
+			end)
+		end
+		btn("Cancel", false, c.hv, c.tx, nil)
+		btn("Enable", true, c.ac, c.bg, function() run(onYes) end)
+		d.Activated:Connect(function() d:Destroy() end)
+	end
+	
+		local nv = mk("Frame", {Position = UDim2.fromOffset(12, th + 4), Size = UDim2.new(0, nw, 1, -(th + 16)), BackgroundTransparency = 1, Parent = mn})
 	local sbx = mk("Frame", {Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = c.cd, BorderSizePixel = 0, ClipsDescendants = true, Parent = nv}, {rc(6), sk(0.9)})
 	local sst = sbx:FindFirstChildOfClass("UIStroke")
 	ig({Text = "magnifying-glass", TextSize = 14, TextColor3 = c.dm, Position = UDim2.fromOffset(9, 0), Size = UDim2.fromOffset(16, 32), Parent = sbx})
-	local sb = mk("TextBox", {BackgroundTransparency = 1, Position = UDim2.fromOffset(30, 0), Size = UDim2.new(1, -36, 1, 0), Font = fn, TextSize = 13, TextColor3 = c.tx, PlaceholderText = "Search", PlaceholderColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, Text = "", Parent = sbx})
+	local sb = mk("TextBox", {BackgroundTransparency = 1, Position = UDim2.fromOffset(30, 0), Size = UDim2.new(1, -62, 1, 0), Font = fn, TextSize = 13, TextColor3 = c.tx, PlaceholderText = "Search", PlaceholderColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, Text = "", Parent = sbx})
+
+	local sbc = bt({AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -4, 0.5, 0), Size = UDim2.fromOffset(24, 24), Visible = false, Parent = sbx})
+	ig({Text = "x", TextSize = 12, TextColor3 = c.dm, Size = UDim2.fromScale(1, 1), TextXAlignment = Enum.TextXAlignment.Center, Active = false, Parent = sbc})
+	sbc.Activated:Connect(function() W:Search("") end)
 	sb.Focused:Connect(function() tw(sst, {Color = c.ac, Transparency = 0}) end)
 	sb.FocusLost:Connect(function() tw(sst, {Color = c.tx, Transparency = 0.9}) end)
 	local tf = mk("ScrollingFrame", {Position = UDim2.fromOffset(0, 40), Size = UDim2.new(1, 0, 1, -40), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 0, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(), ScrollingDirection = Enum.ScrollingDirection.Y, Parent = nv}, {ll(4)})
@@ -2547,11 +2708,36 @@ function L:Window(o)
 	hd({AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, th), Size = UDim2.new(0, 10, 1, -(th + 16))}, true, false)
 	table.insert(W.cn, sg:GetPropertyChangedSignal("AbsoluteSize"):Connect(fx))
 
+	
 	function W:Show()
-		mn.Visible, sc.Scale = true, W.sv
+		if W.introing then return end
+		W.vg = W.vg + 1
+		W.shown = true
+		if L.Flags.oanim == false then
+			mn.Visible, sc.Scale = true, W.sv
+			return
+		end
+		if not mn.Visible then
+			sc.Scale = W.sv * 0.88
+			mn.Visible = true
+		end
+		tws:Create(sc, TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = W.sv}):Play()
 	end
-	function W:Hide() mn.Visible = false end
-	local function tg() if mn.Visible then W:Hide() else W:Show() end end
+	function W:Hide()
+		if W.introing or not W.shown then return end
+		W.shown = false
+		W.vg = W.vg + 1
+		local g = W.vg
+		if L.Flags.oanim == false then
+			mn.Visible = false
+			return
+		end
+		tws:Create(sc, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = W.sv * 0.9}):Play()
+		task.delay(0.14, function()
+			if W.vg == g then mn.Visible = false end
+		end)
+	end
+	local function tg() if W.shown then W:Hide() else W:Show() end end
 	fl.Activated:Connect(tg)
 	nb.Activated:Connect(function() W:Hide() end)
 	local arm, an = false, 0
@@ -2618,7 +2804,7 @@ function L:Window(o)
 		local n, q = 0, s:lower()
 		for _, T in W.Tabs do
 			for _, e in T.Rows do
-				if e.Kind ~= "Section" and e.Kind ~= "Label" and (e.Name:lower():find(q, 1, true) or tr(e.Name):lower():find(q, 1, true)) then
+				if e.Kind ~= "Label" and (e.Name:lower():find(q, 1, true) or tr(e.Name):lower():find(q, 1, true)) then
 					n += 1
 					local b = bt({Size = UDim2.new(1, 0, 0, 44), BackgroundColor3 = c.cd, LayoutOrder = n, Parent = sr}, {rc(6), sk(0.92), pd(12, 12)})
 					tl({Text = e.Name, Size = UDim2.new(0.6, 0, 1, 0), TextTruncate = Enum.TextTruncate.AtEnd, Parent = b})
@@ -2639,7 +2825,10 @@ function L:Window(o)
 		fd()
 		return n
 	end
-	sb:GetPropertyChangedSignal("Text"):Connect(function() if sb.Text ~= W.sl then W:Search(sb.Text) end end)
+	sb:GetPropertyChangedSignal("Text"):Connect(function()
+		sbc.Visible = sb.Text ~= ""
+		if sb.Text ~= W.sl then W:Search(sb.Text) end
+	end)
 
 	function W:Tab(t)
 		t = t or {}
@@ -2651,6 +2840,11 @@ function L:Window(o)
 		reg[nm] = T.Name; nm.Text = tr(T.Name)
 		local p = page()
 		T.Page, T.Btn = p, b
+		p:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+			if not W.ready or not p.Visible then return end
+			W.scr[T.Name] = math.floor(p.CanvasPosition.Y)
+			W.scrSave()
+		end)
 		local function paint(on)
 			tw(b, {BackgroundTransparency = on and 0 or 1})
 			bar.Visible, nm.TextColor3 = on, on and c.tx or c.dm
@@ -2666,10 +2860,19 @@ function L:Window(o)
 			W.Current, p.Visible = T, true
 			paint(true)
 			fd()
+			if W.ready then
+				W:SetStore("tab", T.Name)
+				if not T.rs then
+					T.rs = true
+					local y = W.scr[T.Name]
+					if y then task.defer(function() p.CanvasPosition = Vector2.new(0, y) end) end
+				end
+			end
 		end
 		b.Activated:Connect(function() T:Select() end)
 		table.insert(W.Tabs, T)
 		if not W.Current then T:Select() else paint(false) end
+		if W.lastTab == T.Name and W.Current ~= T and not W.ready then T:Select() end
 
 		local function add(e)
 			T.n += 1
@@ -2704,6 +2907,7 @@ function L:Window(o)
 			end
 			local e = {Row = f, Kind = k, Name = r.Name, Flag = r.Flag, Tab = T, Sec = T.sec, Label = l}
 			function e:Get() return (e :: any).v end
+			f.MouseButton2Click:Connect(function() if W.fav then W:TogglePin(e) end end)
 			return add(e), f, l
 		end
 		local function txt(e, l)
@@ -2712,26 +2916,155 @@ function L:Window(o)
 			return e
 		end
 
+
 		function T:Section(r)
 			r = r or {}
-			local l = tl({Text = tostring(r.Name or ""), Font = fb, TextSize = 13, BackgroundTransparency = 0, BackgroundColor3 = c.hv, Size = UDim2.new(1, 0, 0, 30), TextYAlignment = Enum.TextYAlignment.Center, Parent = p}, {pd(10, 0, 0, 0), rc(6), rk()})
+			local hh = W.hdrH or 30
+			local l = tl({Text = tostring(r.Name or ""), Font = fb, TextSize = 13, BackgroundTransparency = 0, BackgroundColor3 = c.hv, Size = UDim2.new(1, 0, 0, hh), TextYAlignment = Enum.TextYAlignment.Center, Parent = p}, {pd(10, 0, 0, 0), rc(6), rk()})
 			T.sec = l.Text
 			reg[l] = T.sec; l.Text = tr(T.sec)
-			local so = {rows = {}, col = false}
+			local so = {rows = {}, col = false, gen = 0, sv = {}, tw = {}, key = T.Name .. "/" .. T.sec, head = l}
+			if W.colmap[so.key] then so.col = true end
 			T.cs = so
-			-- Collapse arrow: a small accent pill with a chevron icon (rotates when collapsed)
-			local pill = mk("Frame", {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -6, 0.5, 0), Size = UDim2.fromOffset(28, 20), BackgroundColor3 = c.ac, BackgroundTransparency = 0.85, BorderSizePixel = 0, Parent = l}, {rc(6)})
-			local ar = ig({Text = "chevron-down", TextSize = 16, TextColor3 = c.ac, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(20, 20), TextXAlignment = Enum.TextXAlignment.Center, Parent = pill})
-			local hb = bt({Size = UDim2.fromScale(1, 1), ZIndex = 2, Parent = l})
-			hb.MouseEnter:Connect(function() tw(pill, {BackgroundTransparency = 0.65}, 0.12) end)
-			hb.MouseLeave:Connect(function() tw(pill, {BackgroundTransparency = 0.85}, 0.12) end)
-			function so.set(v)
+			T.secList = T.secList or {}
+			table.insert(T.secList, so)
+			table.insert(W.secs, so)
+
+			-- per-tab toolbar: Collapse all / Expand all
+			if not T.bar then
+				T.bar = true
+				local tbf = mk("Frame", {Name = "SectionTools", Size = UDim2.new(1, 0, 0, 24), BackgroundTransparency = 1, LayoutOrder = 0, Parent = p})
+				local function tool(txt, icon, x)
+					local b = bt({AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, x, 0.5, 0), Size = UDim2.fromOffset(112, 22), BackgroundColor3 = c.ac, BackgroundTransparency = 0.88, Parent = tbf}, {rc(6)})
+					ig({Text = icon, TextSize = 14, TextColor3 = c.ac, Position = UDim2.fromOffset(4, 0), Size = UDim2.fromOffset(18, 22), TextXAlignment = Enum.TextXAlignment.Center, Active = false, Parent = b})
+					local tx = tl({Text = txt, TextSize = 12, TextColor3 = c.ac, Position = UDim2.fromOffset(24, 0), Size = UDim2.new(1, -28, 1, 0), TextTruncate = Enum.TextTruncate.AtEnd, Active = false, Parent = b})
+					reg[tx] = txt; tx.Text = tr(txt)
+					b.MouseEnter:Connect(function() tw(b, {BackgroundTransparency = 0.7}, 0.12) end)
+					b.MouseLeave:Connect(function() tw(b, {BackgroundTransparency = 0.88}, 0.12) end)
+					return b
+				end
+				tool("Collapse all", "chevron-small-up", 0).Activated:Connect(function()
+					for _, s2 in T.secList do s2.set(true) end
+				end)
+				tool("Expand all", "chevron-small-down", -118).Activated:Connect(function()
+					for _, s2 in T.secList do s2.set(false) end
+				end)
+			end
+
+			-- arrow pill (chevron / plus-minus) + active badge
+			local pill = mk("Frame", {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -6, 0.5, 0), Size = UDim2.fromOffset(28, math.clamp(hh - 10, 16, 28)), BackgroundColor3 = c.ac, BackgroundTransparency = 0.85, BorderSizePixel = 0, Parent = l}, {rc(6)})
+			local ar = ig({Text = "chevron-small-down", TextSize = 18, TextColor3 = c.ac, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(20, 20), TextXAlignment = Enum.TextXAlignment.Center, Parent = pill})
+			local pm = tl({Text = "-", Font = fb, TextSize = 20, TextColor3 = c.ac, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(20, 20), TextXAlignment = Enum.TextXAlignment.Center, Visible = false, Parent = pill})
+			local bd = mk("Frame", {Name = "ActiveBadge", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -40, 0.5, 0), Size = UDim2.fromOffset(0, 20), AutomaticSize = Enum.AutomaticSize.X, BackgroundTransparency = 1, Visible = false, Parent = l}, {mk("UIListLayout", {FillDirection = Enum.FillDirection.Horizontal, HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder})})
+			mk("Frame", {Size = UDim2.fromOffset(6, 6), BackgroundColor3 = c.ac, BorderSizePixel = 0, LayoutOrder = 1, Parent = bd}, {rc(3)})
+			local ct = tl({Text = "", Font = fb, TextSize = 12, TextColor3 = c.ac, Size = UDim2.fromOffset(0, 20), AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = 2, Parent = bd})
+			local hst = l:FindFirstChild("RowBorder")
+
+			function so.base() return W.arrow == "Chevron Only" and 1 or 0.85 end
+			function so.draw(anim)
+				local st = W.arrow
+				ar.Visible = st ~= "Plus / Minus"
+				pm.Visible = st == "Plus / Minus"
+				pm.Text = so.col and "+" or "-"
+				pill.BackgroundTransparency = so.base()
+				local rot = so.col and -90 or 0
+				if anim then tw(ar, {Rotation = rot}, 0.15) else ar.Rotation = rot end
+			end
+			function so.size(h)
+				l.Size = UDim2.new(1, 0, 0, h)
+				l.TextSize = h <= 26 and 12 or (h >= 38 and 15 or 13)
+				pill.Size = UDim2.fromOffset(28, math.clamp(h - 10, 16, 28))
+			end
+			function so.upd()
+				local n = 0
+				for _, e in T.Rows do
+					if e.SecObj == so and counted(e) then n = n + 1 end
+				end
+				bd.Visible = n > 0
+				l.TextColor3 = n > 0 and c.ac or c.tx
+				ct.Text = n .. " " .. tr("On"):lower()
+			end
+			local function hover(on)
+				tw(pill, {BackgroundTransparency = on and (so.base() - 0.2) or so.base()}, 0.12)
+				if hst then tw(hst, {Transparency = on and 0.2 or 0.5}, 0.12) end
+			end
+			local function restore()
+				for _, tn in so.tw do tn:Cancel() end
+				table.clear(so.tw)
+				for rw, o in so.sv do
+					rw.Size, rw.ClipsDescendants = o[1], o[2]
+					if o[3] then o[3].Transparency = o[4] end
+				end
+				table.clear(so.sv)
+			end
+			function so.set(v, instant)
+				v = v == true
+				so.gen = so.gen + 1
+				local g = so.gen
+				restore()
 				so.col = v
-				tw(ar, {Rotation = v and -90 or 0}, 0.15)
-				for _, r in so.rows do r.Visible = not v end
+				so.draw(not instant)
+				W.colmap[so.key] = v and true or nil
+				if not instant then W:SetStore("col", W.colmap) end
+				if instant or L.Flags.sanim == false or not (mn.Visible and p.Visible) then
+					for _, rw in so.rows do rw.Visible = not v end
+					task.defer(W.fd)
+					return
+				end
+				local info = TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+				local function play(o, props)
+					local tn = tws:Create(o, info, props)
+					table.insert(so.tw, tn)
+					tn:Play()
+				end
+				for _, rw in so.rows do
+					local sz = rw.Size
+					if rw.AutomaticSize ~= Enum.AutomaticSize.None or sz.Y.Scale ~= 0 or sz.Y.Offset <= 0 then
+						rw.Visible = not v
+					elseif not (v and not rw.Visible) then
+						local stk = rw:FindFirstChild("RowBorder")
+						so.sv[rw] = {sz, rw.ClipsDescendants, stk, stk and stk.Transparency}
+						rw.ClipsDescendants = true
+						local zero = UDim2.new(sz.X.Scale, sz.X.Offset, 0, 0)
+						if v then
+							play(rw, {Size = zero})
+							if stk then play(stk, {Transparency = 1}) end
+						else
+							rw.Size = zero
+							rw.Visible = true
+							play(rw, {Size = sz})
+							if stk then
+								local tp = stk.Transparency
+								stk.Transparency = 1
+								play(stk, {Transparency = tp})
+							end
+						end
+					end
+				end
+				task.delay(0.2, function()
+					if so.gen ~= g then return end
+					restore()
+					if so.col then
+						for _, rw in so.rows do rw.Visible = false end
+					end
+					W.fd()
+				end)
 				task.defer(W.fd)
 			end
-			hb.Activated:Connect(function() so.set(not so.col) end)
+
+			local hb = bt({Size = UDim2.fromScale(1, 1), ZIndex = 2, Parent = l})
+			hb.MouseEnter:Connect(function() if uis.MouseEnabled then hover(true) end end)
+			hb.MouseLeave:Connect(function() hover(false) end)
+			hb.Activated:Connect(function()
+				if uis:IsKeyDown(Enum.KeyCode.LeftShift) then
+					for _, s2 in T.secList do s2.set(s2 ~= so) end
+				else
+					so.set(not so.col)
+				end
+			end)
+			so.draw(false)
+			so.size(hh)
+			so.upd()
 			local e = txt(add({Row = l, Kind = "Section", Name = T.sec, Tab = T}), l)
 			e.SecObj = so
 			return e
@@ -2750,6 +3083,7 @@ function L:Window(o)
 			local e, f, l = row("Button", r)
 			ig({Text = "chevron-small-right", TextSize = 14, TextColor3 = c.dm, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.fromOffset(16, 44), TextXAlignment = Enum.TextXAlignment.Center, Parent = f})
 			f.Activated:Connect(function() run(r.Callback) end)
+			e.Run = function() run(r.Callback) end
 			return txt(e, l)
 		end
 
@@ -2775,10 +3109,24 @@ function L:Window(o)
 				e.v = v
 				draw(true)
 				put(e, v)
+				if e.SecObj and e.SecObj.upd then e.SecObj.upd() end
+				if e.fav then e.fav() end
 				run(r.Callback, v)
 			end
-			f.Activated:Connect(function() e:Set(not e.v) end)
+			function e.Click()
+				local ck = "cf:" .. tostring(r.Flag or r.Name)
+				if r.Confirm and not e.v and not W:GetStore(ck) then
+					W:Confirm(r.Name, r.Confirm, function()
+						W:SetStore(ck, true)
+						e:Set(true)
+					end)
+					return
+				end
+				e:Set(not e.v)
+			end
+			f.Activated:Connect(function() e.Click() end)
 			done(e)
+			if e.SecObj and e.SecObj.upd then e.SecObj.upd() end
 			return e
 		end
 
@@ -3012,6 +3360,7 @@ function L:Window(o)
 				e.v = k
 				draw()
 				put(e, k)
+				if r.OnSet then run(r.OnSet, k) end
 			end
 			hov(cb, function() return c.bg end)
 			cb.Activated:Connect(function()
@@ -3037,6 +3386,143 @@ function L:Window(o)
 		return T
 	end
 
+
+	function W:Jump(e)
+		e.Tab:Select()
+		task.defer(jump, e)
+	end
+	local function pinKey(e) return e.Flag and ("f:" .. e.Flag) or ("n:" .. e.Tab.Name .. "/" .. e.Name) end
+	function W:Pins()
+		local v = W:GetStore("pins")
+		return type(v) == "table" and v or {}
+	end
+	function W:SetPin(e, on, quiet)
+		if not W.fav or not (e and e.Tab) or e.Tab.Name == "Favorites" then return end
+		local pins, k, at = W:Pins(), pinKey(e), nil
+		for i, x in pins do
+			if x == k then at = i end
+		end
+		if on == nil then on = at == nil end
+		if on and not at then table.insert(pins, k) elseif not on and at then table.remove(pins, at) else return end
+		W:SetStore("pins", pins)
+		W.fav.rebuild()
+		if not quiet then W:Notify({Title = tr(on and "Pinned" or "Unpinned"), Text = e.Name, Time = 2}) end
+	end
+	function W:TogglePin(e) W:SetPin(e, nil) end
+	function W:EnableFavorites()
+		if W.fav then return end
+		local icon = "check"
+		pcall(function()
+			local tsv = game:GetService("TextService")
+			local function wid(nm)
+				local pr = Instance.new("GetTextBoundsParams")
+				pr.Text, pr.Font, pr.Size, pr.Width = nm, ir, 16, 1000
+				return tsv:GetTextBoundsAsync(pr).X
+			end
+			local ref = wid("gear")
+			for _, nm in {"star", "bookmark", "heart"} do
+				local w = wid(nm)
+				if ref and ref > 4 and w and math.abs(w - ref) <= 4 then
+					icon = nm
+					break
+				end
+			end
+		end)
+		local FT = W:Tab({Name = "Favorites", Icon = icon})
+		FT.Btn.LayoutOrder = 0
+		local fp = FT.Page
+		local function favRow(i, e)
+			local f = bt({Name = "FavRow", Size = UDim2.new(1, 0, 0, 44), BackgroundColor3 = c.cd, LayoutOrder = i - 1000, Parent = fp}, {rc(6), rk(), pd(12, 12)})
+			f:SetAttribute("FavRow", true)
+			hov(f, function() return c.cd end)
+			local lb = tl({Text = e.Name, Size = UDim2.new(1, -96, 1, 0), TextTruncate = Enum.TextTruncate.AtEnd, Parent = f})
+			reg[lb] = e.Name; lb.Text = tr(e.Name)
+			local xb = bt({AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(24, 24), ZIndex = 3, Parent = f})
+			ig({Text = "x", TextSize = 12, TextColor3 = c.dm, Size = UDim2.fromScale(1, 1), TextXAlignment = Enum.TextXAlignment.Center, Active = false, Parent = xb})
+			xb.Activated:Connect(function() W:SetPin(e, false) end)
+			if e.Kind == "Toggle" then
+				local sw = mk("Frame", {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -32, 0.5, 0), Size = UDim2.fromOffset(40, 20), BackgroundColor3 = c.ac, BackgroundTransparency = 1, BorderSizePixel = 0, Parent = f}, {rc(10), sk(0.2, c.dm)})
+				local st = sw:FindFirstChildOfClass("UIStroke")
+				local kn = mk("Frame", {AnchorPoint = Vector2.new(0, 0.5), Position = UDim2.new(0, 4, 0.5, 0), Size = UDim2.fromOffset(12, 12), BackgroundColor3 = c.dm, BorderSizePixel = 0, Parent = sw}, {rc(6)})
+				local function paint(a)
+					local on = e.v == true
+					local g = a and tw or function(x, q) for k2, v2 in q do x[k2] = v2 end end
+					g(sw, {BackgroundTransparency = on and 0 or 1})
+					g(st, {Transparency = on and 1 or 0.2})
+					g(kn, {Position = UDim2.new(0, on and 24 or 4, 0.5, 0), BackgroundColor3 = on and c.bg or c.dm})
+				end
+				paint(false)
+				e.fav = function() if f.Parent then paint(true) end end
+				f.Activated:Connect(function() e.Click() end)
+			elseif e.Kind == "Button" and e.Run then
+				f.Activated:Connect(function() e.Run() end)
+			else
+				ig({Text = "chevron-small-right", TextSize = 14, TextColor3 = c.dm, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -32, 0.5, 0), Size = UDim2.fromOffset(16, 24), TextXAlignment = Enum.TextXAlignment.Center, Active = false, Parent = f})
+				f.Activated:Connect(function() W:Jump(e) end)
+			end
+		end
+		local function index()
+			local idx = {}
+			for _, T2 in W.Tabs do
+				if T2.Name ~= "Favorites" then
+					for _, e in T2.Rows do
+						if e.Kind ~= "Section" and e.Kind ~= "Label" then idx[pinKey(e)] = e end
+					end
+				end
+			end
+			return idx
+		end
+		local function rebuild()
+			for _, x in fp:GetChildren() do
+				if x:GetAttribute("FavRow") then x:Destroy() end
+			end
+			local idx = index()
+			for i, k in W:Pins() do
+				if idx[k] then favRow(i, idx[k]) end
+			end
+		end
+		W.fav = {rebuild = rebuild}
+
+		FT:Label({Text = "Right-click any feature (PC) or use the picker below to pin it here. Tap x to unpin."})
+		local byName, names = {}, {}
+		for _, T2 in W.Tabs do
+			if T2.Name ~= "Favorites" and T2.Name ~= "Setting" then
+				for _, e in T2.Rows do
+					if e.Kind == "Toggle" or e.Kind == "Button" then
+						local nm = e.Name
+						if byName[nm] then nm = T2.Name .. " > " .. e.Name end
+						byName[nm] = e
+						table.insert(names, nm)
+					end
+				end
+			end
+		end
+		local pick = FT:Dropdown({Name = "Feature To Pin", Options = names})
+		FT:Button({Name = "Pin Selected", Callback = function()
+			local e = byName[pick:Get()]
+			if e then W:SetPin(e, true) end
+		end})
+		FT:Button({Name = "Unpin Selected", Callback = function()
+			local e = byName[pick:Get()]
+			if e then W:SetPin(e, false) end
+		end})
+		FT:Button({Name = "Clear All Pins", Callback = function()
+			W:SetStore("pins", {})
+			rebuild()
+		end})
+		rebuild()
+	end
+	function W:Ready()
+		W.ready = true
+		local T = W.Current
+		if not T then return end
+		T.rs = true
+		local y = W.scr[T.Name]
+		if y then
+			task.delay(0.3, function() T.Page.CanvasPosition = Vector2.new(0, y) end)
+		end
+	end
+
 	function W:Destroy()
 		dead = true
 		for _, x in W.cn do x:Disconnect() end
@@ -3046,6 +3532,56 @@ function L:Window(o)
 		if ge.__AvW == W then ge.__AvW = nil end
 	end
 
+
+	if o.Intro ~= false and cd["introon"] ~= false then
+		W.introing = true
+		mn.Visible = false
+		local cg, cover
+		local function finish()
+			if not W.introing then return end
+			W.introing = false
+			pcall(function()
+				if cover then cover:Destroy() end
+				if cg then cg:Destroy() end
+			end)
+			if not dead then mn.Visible, sc.Scale = true, W.sv end
+		end
+		task.delay(45, finish)
+		task.spawn(function()
+			local ok, err = pcall(function()
+				cg = mk("CanvasGroup", {Name = "Intro", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(280, lg and 150 or 116), BackgroundColor3 = c.bg, BorderSizePixel = 0, GroupTransparency = 1, ZIndex = 200, Parent = sg}, {rc(14), sk(0.5, c.ac)})
+				local us = mk("UIScale", {Scale = 0.7, Parent = cg})
+				if lg then
+					mk("ImageLabel", {BackgroundTransparency = 1, Image = o.Icon, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 16), Size = UDim2.fromOffset(44, 44), ScaleType = Enum.ScaleType.Crop, Parent = cg}, {rc(22)})
+				end
+				tl({Text = tostring(o.Title or "Avenoric"), Font = fb, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Center, TextTruncate = Enum.TextTruncate.AtEnd, Position = UDim2.fromOffset(10, lg and 66 or 30), Size = UDim2.new(1, -20, 0, 24), Parent = cg})
+				local sts = tl({Text = tr("Loading..."), TextSize = 12, TextColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Center, Position = UDim2.fromOffset(10, lg and 94 or 58), Size = UDim2.new(1, -20, 0, 16), Parent = cg})
+				local track = mk("Frame", {AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, lg and 120 or 88), Size = UDim2.fromOffset(220, 6), BackgroundColor3 = c.hv, BorderSizePixel = 0, Parent = cg}, {rc(3)})
+				local fill = mk("Frame", {Size = UDim2.fromScale(0, 1), BackgroundColor3 = c.ac, BorderSizePixel = 0, Parent = track}, {rc(3)})
+				tw(cg, {GroupTransparency = 0}, 0.25)
+				tws:Create(us, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = 1}):Play()
+				task.wait(0.4)
+				local t0 = os.clock()
+				tws:Create(fill, TweenInfo.new(1.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.fromScale(0.9, 1)}):Play()
+				while not dead and ((os.clock() - t0) < 1.5 or not ge.__HowLoaded) and (os.clock() - t0) < 30 do task.wait(0.05) end
+				sts.Text = tr("Ready")
+				tw(fill, {Size = UDim2.fromScale(1, 1)}, 0.2)
+				task.wait(0.35)
+				tws:Create(us, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = 1.12}):Play()
+				tw(cg, {GroupTransparency = 1}, 0.3)
+				task.wait(0.2)
+				if dead then return end
+				cover = mk("Frame", {Name = "OpenCover", Size = UDim2.fromScale(1, 1), BackgroundColor3 = c.bg, BorderSizePixel = 0, ZIndex = 90, Parent = mn}, {rc(12)})
+				sc.Scale = W.sv * 0.82
+				mn.Visible = true
+				tws:Create(sc, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = W.sv}):Play()
+				tw(cover, {BackgroundTransparency = 1}, 0.4)
+				task.wait(0.45)
+			end)
+			if not ok then warn("Intro Failed: " .. tostring(err)) end
+			finish()
+		end)
+	end
 	ge.__AvW = W
 	return W
 end
@@ -3203,7 +3739,7 @@ do
 	table.insert(cs, fl.MouseButton1Up:Connect(function() fa(fv and 1.05 or 1) end))
 	table.insert(cs, fl.Activated:Connect(function()
 	if ge.__HowDrag then return end
-	if gw.Main.Visible then gw:Hide() else gw:Show() end
+	if gw.shown then gw:Hide() else gw:Show() end
 end))
 do
 	local uis2, tr, st0, off0, moved = game:GetService("UserInputService"), nil, nil, nil, false
@@ -4015,6 +4551,54 @@ do
     end})
 end
 
+-- Auto-lock specific fish picked by name (independent from the rarity lock above).
+do
+    local names, seen = {}, {}
+    pcall(function()
+        for _, f in md("Data", "Catalog", "Fish") do
+            if type(f) == "table" and type(f.name) == "string" and f.name ~= "" and not seen[f.name] then
+                seen[f.name] = true
+                table.insert(names, f.name)
+            end
+        end
+    end)
+    table.sort(names)
+    if #names == 0 then names = {"(fish list unavailable)"} end
+    local lockNames, nameWorker = {}, nil
+    gt:Dropdown({Name = "Lock Specific Fish", Options = names, Default = {}, Multi = true, Flag = "lfn", Callback = function(v)
+        lockNames = type(v) == "table" and v or {}
+    end})
+    gt:Toggle({Name = "Auto Lock Specific Fish", Flag = "alfn", Callback = function(v)
+        if nameWorker then nameWorker.stopped = true; nameWorker = nil end
+        if not v then return end
+        local worker = {stopped = false}
+        nameWorker = worker
+        task.spawn(function()
+            while not worker.stopped do
+                local ok, err = pcall(function()
+                    if #lockNames > 0 then
+                        local d, catalog, sell = pd(), md("Data", "Catalog"), rv.SellController
+                        for id, fish in (d.Inventory and d.Inventory.Fishes) or {} do
+                            if worker.stopped then break end
+                            if fish and fish.locked ~= true then
+                                local info = catalog.Fish.GetById(fish.fishId)
+                                if info and table.find(lockNames, info.name) then
+                                    local status, locked = sell:ToggleLock(id)
+                                    if status == 0 and locked == true then
+                                        zx(`[Lock Fish] Locked {info.name}`)
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end)
+                if not ok then zx(`[Lock Fish] Error: {tostring(err)}`) end
+                task.wait(2)
+            end
+        end)
+    end})
+end
+
 gt:Section({Name = "Quest"})
 gt:Dropdown({Name = "Select Rod Quest", Options = qz, Flag = "qs"})
 gt:Toggle({Name = "Auto Rod Quest", Flag = "qa"})
@@ -4078,7 +4662,7 @@ end})
 local tl = gw:Tab({Name = "Teleport", Icon = "person-teleport"})
 tl:Section({Name = "Island"})
 tl:Dropdown({Name = "Select Island", Options = iz, Flag = "si"})
-it = tl:Toggle({Name = "Auto Island", Flag = "ai", Callback = function(v)
+it = tl:Toggle({Name = "Auto Island", Confirm = "Automatic teleporting can be detected by the game and may get your account flagged. Enable anyway?", Flag = "ai", Callback = function(v)
 	if v then
 		if rk then rk:Set(false) end
 		if nk then nk:Set(false) end
@@ -4089,7 +4673,7 @@ tl:Section({Name = "Boat (Island / NPC / Boss)"})
 tl:Dropdown({Name = "Select Boat", Options = bn, Default = "Truck", Flag = "sb"})
 tl:Section({Name = "NPC"})
 tl:Dropdown({Name = "Select NPC", Options = nl, Flag = "sv"})
-nk = tl:Toggle({Name = "Teleport To NPC", Flag = "tv", Callback = function(v)
+nk = tl:Toggle({Name = "Teleport To NPC", Confirm = "Automatic teleporting can be detected by the game and may get your account flagged. Enable anyway?", Flag = "tv", Callback = function(v)
 	if v then
 		if it then it:Set(false) end
 		if rk then rk:Set(false) end
@@ -5115,6 +5699,7 @@ do local __howf = function()
 		{flag = "smo", get = function() return "Earned: " .. fmtN(S.money) end},
 		{flag = "smo", get = function() return "Coin/h: " .. fmtN(moneyPerHour()) end},
 		{flag = "smo", get = function() return "Last Sell: +" .. fmtN(S.last) end},
+		{flag = "mac", get = function() return "Active: " .. tostring(gw:CountActive()) end},
 	}
 
 	-- ------------------------------------------------------------- mini HUD
@@ -5170,6 +5755,59 @@ do local __howf = function()
 		labels[i] = t
 	end
 
+	-- ------------------------------------------- Mini UI line icons
+	task.spawn(function()
+		local ts2 = game:GetService("TextService")
+		local function wid(nm)
+			local ok, b = pcall(function()
+				local pr = Instance.new("GetTextBoundsParams")
+				pr.Text, pr.Font, pr.Size, pr.Width = nm, ir, 16, 1000
+				return ts2:GetTextBoundsAsync(pr)
+			end)
+			return ok and b and b.X or nil
+		end
+		local ref = wid("trophy")
+		local checkable = ref and ref > 4
+		local function valid(nm)
+			if not checkable then return true end
+			local w = wid(nm)
+			return w and math.abs(w - ref) <= 4
+		end
+		-- last entry of each list is a name already used elsewhere in the hub (known to render)
+		local want = {
+			{"skull", "crown", "flag", "star", "trophy"},
+			{"clock", "timer", "hourglass", "gear"},
+			{"fish", "fishing-hook", "anchor", "waves", "shrimp"},
+			{"backpack", "bag", "shopping-bag", "package", "shopping-basket"},
+			{"coins", "money", "dollar", "four-squares-grid"},
+			{"trend-up", "chart-line-up", "arrow-up", "chart-bar", "eye"},
+			{"receipt", "tag", "coins", "shopping-basket"},
+			{"lightning-bolt", "bolt", "power", "sparkle", "gear"},
+		}
+		-- if validation is impossible, skip the guesses and use the safe last entry
+		if not checkable then
+			for i, l in want do want[i] = {l[#l]} end
+		end
+		for i, lab in labels do
+			for _, nm in want[i] or {} do
+				if valid(nm) then
+					local pad = Instance.new("UIPadding")
+					pad.PaddingLeft = UDim.new(0, 21)
+					pad.Parent = lab
+					local ic = Instance.new("TextLabel")
+					ic.Name = "Icon"
+					ic.BackgroundTransparency, ic.Active = 1, false
+					ic.FontFace, ic.TextSize, ic.TextColor3 = ir, 15, cT.ac
+					ic.Text = nm
+					ic.Position, ic.Size = UDim2.fromOffset(-21, 0), UDim2.fromOffset(17, 17)
+					ic.TextXAlignment, ic.TextYAlignment = Enum.TextXAlignment.Center, Enum.TextYAlignment.Center
+					ic.Parent = lab
+					break
+				end
+			end
+		end
+	end)
+
 	-- ------------------------------------------- Damage / DPS panel (fixed, right side)
 	local dmySl
 	local dp = Instance.new("Frame")
@@ -5215,26 +5853,31 @@ do local __howf = function()
 		btnCol.Text = collapsed and "+" or "-"
 	end)
 
-	-- dragging (mouse + touch)
+	-- dragging (mouse + touch): the whole Mini UI is the handle (buttons still work)
 	do
-		local dragging, startIn, startPos
-		bar.InputBegan:Connect(function(i)
-			if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-				dragging, startIn, startPos = i, i.Position, fr.AbsolutePosition
-			end
-		end)
+		local dragging, startIn, startX, startY
+		local function begin(i)
+			if i.UserInputType ~= Enum.UserInputType.MouseButton1 and i.UserInputType ~= Enum.UserInputType.Touch then return end
+			dragging, startIn = i, i.Position
+			startX, startY = fr.AbsolutePosition.X, fr.AbsolutePosition.Y
+			X.miniDrag = true
+		end
+		fr.InputBegan:Connect(begin)
+		bar.InputBegan:Connect(begin)
 		track(UIS.InputChanged:Connect(function(i)
 			if not dragging then return end
 			if i.UserInputType == Enum.UserInputType.MouseMovement or i == dragging then
-				local d = i.Position - startIn
-				local vp = hud.AbsoluteSize
-				local x = math.clamp(startPos.X + d.X, 0, math.max(0, vp.X - fr.AbsoluteSize.X))
-				local y = math.clamp(startPos.Y + d.Y, 0, math.max(0, vp.Y - fr.AbsoluteSize.Y))
+				local vp, az = hud.AbsoluteSize, fr.AbsoluteSize
+				local x = math.clamp(startX + (i.Position.X - startIn.X), 0, math.max(0, vp.X - az.X))
+				local y = math.clamp(startY + (i.Position.Y - startIn.Y), 0, math.max(0, vp.Y - az.Y))
 				fr.Position = UDim2.fromOffset(x, y)
 			end
 		end))
 		track(UIS.InputEnded:Connect(function(i)
-			if dragging and (i == dragging or i.UserInputType == Enum.UserInputType.MouseButton1) then dragging = nil end
+			if dragging and (i == dragging or i.UserInputType == Enum.UserInputType.MouseButton1) then
+				dragging = nil
+				X.miniDrag = false
+			end
 		end))
 	end
 
@@ -5259,7 +5902,7 @@ do local __howf = function()
 			end
 			do
 				local vp, ap, az = hud.AbsoluteSize, fr.AbsolutePosition, fr.AbsoluteSize
-				if ap.X < 0 or ap.Y < 0 or ap.X + az.X > vp.X or ap.Y + az.Y > vp.Y then
+				if not X.miniDrag and (ap.X < 0 or ap.Y < 0 or ap.X + az.X > vp.X or ap.Y + az.Y > vp.Y) then
 					fr.Position = UDim2.fromOffset(math.clamp(ap.X, 0, math.max(0, vp.X - az.X)), math.clamp(ap.Y, 0, math.max(0, vp.Y - az.Y)))
 				end
 			end
@@ -5779,6 +6422,7 @@ do local __howf = function()
 	ts:Toggle({Name = "Mini: Boss Time", Default = true, Flag = "mbs"})
 	ts:Toggle({Name = "Mini: Fish Caught", Default = true, Flag = "mfc"})
 	ts:Toggle({Name = "Mini: Bag / Locked", Default = true, Flag = "mbg"})
+	ts:Toggle({Name = "Mini: Active Features", Default = true, Flag = "mac"})
 	ts:Toggle({Name = "Show Damage / DPS Panel", Default = true, Flag = "dmp"})
 	dmySl = ts:Slider({Name = "Damage Panel Height (%)", Min = 5, Max = 95, Step = 1, Default = 80, Flag = "dmy2", Callback = function() applyDmy() end})
 	local function dmyStep(d)
@@ -5791,6 +6435,65 @@ do local __howf = function()
 	ts:Slider({Name = "Mini UI Scale (%)", Min = 50, Max = 150, Step = 5, Default = 100, Flag = "mus"})
 	ts:Button({Name = "Reset Mini UI Position", Callback = function() fr.Position = UDim2.new(0, 12, 0, 80) end})
 	ts:Button({Name = "Reset Time / Fish / Money", Callback = resetStats})
+
+	-- ------------------------------------------------ Interface / Presets (new)
+	ts:Section({Name = "Interface"})
+	ts:Toggle({Name = "Intro Animation", Default = true, Flag = "introon"})
+	ts:Toggle({Name = "Open / Close Animation", Default = true, Flag = "oanim"})
+	ts:Toggle({Name = "Section Animation", Default = true, Flag = "sanim"})
+	ts:Dropdown({Name = "Section Arrow Style", Options = {"Pill + Chevron", "Chevron Only", "Plus / Minus"}, Default = "Pill + Chevron", Flag = "sarrow", Callback = function(v) gw:SetArrowStyle(v) end})
+	ts:Dropdown({Name = "Section Header Size", Options = {"Compact", "Normal", "Large"}, Default = "Normal", Flag = "shsz", Callback = function(v) gw:SetHeaderSize(v) end})
+	ts:Dropdown({Name = "Notifications", Options = {"Normal", "Short", "Off"}, Default = "Normal", Flag = "nmode"})
+	ts:Keybind({Name = "UI Toggle Key", Default = Enum.KeyCode.LeftControl, Flag = "ukey", OnSet = function(k) gw.key = k end})
+	ts:Button({Name = "Collapse All Sections", Callback = function() gw:CollapseAll(true) end})
+	ts:Button({Name = "Expand All Sections", Callback = function() gw:CollapseAll(false) end})
+	ts:Button({Name = "Reset Risk Warnings", Callback = function()
+		gw:ResetStore("cf:")
+		gw:Notify({Title = "Risk Warnings", Text = "Reset", Time = 2})
+	end})
+
+	ts:Section({Name = "Presets"})
+	local slotDD = ts:Dropdown({Name = "Preset Slot", Options = {"Preset 1", "Preset 2", "Preset 3", "Preset 4", "Preset 5"}, Default = "Preset 1"})
+	local slotInfo = ts:Label({Text = "-"})
+	local function allPresets()
+		local v = gw:GetStore("presets")
+		return type(v) == "table" and v or {}
+	end
+	local function refreshSlots()
+		local pr, parts = allPresets(), {}
+		for i = 1, 5 do
+			local sl = pr["Preset " .. i]
+			table.insert(parts, i .. ": " .. ((sl and sl.t) or "-"))
+		end
+		slotInfo:Set(table.concat(parts, "  |  "))
+	end
+	refreshSlots()
+	ts:Button({Name = "Save To Slot", Callback = function()
+		local k = slotDD:Get() or "Preset 1"
+		local pr = allPresets()
+		pr[k] = {t = os.date("%d/%m %H:%M"), d = gw:Snapshot()}
+		gw:SetStore("presets", pr)
+		refreshSlots()
+		gw:Notify({Title = "Presets", Text = k .. " saved", Time = 2})
+	end})
+	ts:Button({Name = "Load Slot", Callback = function()
+		local k = slotDD:Get() or "Preset 1"
+		local sl = allPresets()[k]
+		if not sl or type(sl.d) ~= "table" then
+			gw:Notify({Title = "Presets", Text = k .. " is empty", Time = 2})
+			return
+		end
+		local n = gw:ApplySnapshot(sl.d)
+		gw:Notify({Title = "Presets", Text = k .. " loaded (" .. n .. ")", Time = 3})
+	end})
+	ts:Button({Name = "Clear Slot", Callback = function()
+		local k = slotDD:Get() or "Preset 1"
+		local pr = allPresets()
+		pr[k] = nil
+		gw:SetStore("presets", pr)
+		refreshSlots()
+		gw:Notify({Title = "Presets", Text = k .. " cleared", Time = 2})
+	end})
 
 	-- apply saved visuals once everything exists
 	task.defer(function()
@@ -5870,14 +6573,14 @@ do local __howf = function()
 
 	tp:Section({Name = "Speed / Jump"})
 	numPair("Walk Speed", 16, 200, 16, "pws", "speed")
-	tp:Toggle({Name = "Enable Walk Speed", Flag = "pse", Callback = function(v)
+	tp:Toggle({Name = "Enable Walk Speed", Confirm = "This feature changes your character's movement and can be detected by the game. Enable anyway?", Flag = "pse", Callback = function(v)
 		if not v then
 			local _, _, h = lc()
 			if h then h.WalkSpeed = 16 end
 		end
 	end})
 	numPair("Jump Power", 50, 200, 50, "pjp", "jump")
-	tp:Toggle({Name = "Enable Jump Power", Flag = "pje", Callback = function(v)
+	tp:Toggle({Name = "Enable Jump Power", Confirm = "This feature changes your character's movement and can be detected by the game. Enable anyway?", Flag = "pje", Callback = function(v)
 		if not v then
 			local _, _, h = lc()
 			if h then h.JumpPower = 50 end
@@ -5894,8 +6597,8 @@ do local __howf = function()
 	end))
 
 	tp:Section({Name = "Movement"})
-	tp:Toggle({Name = "Infinite Jump", Flag = "pij"})
-	tp:Toggle({Name = "Noclip", Flag = "pnc"})
+	tp:Toggle({Name = "Infinite Jump", Confirm = "This feature changes your character's movement and can be detected by the game. Enable anyway?", Flag = "pij"})
+	tp:Toggle({Name = "Noclip", Confirm = "This feature changes your character's movement and can be detected by the game. Enable anyway?", Flag = "pnc"})
 	track(UIS.JumpRequest:Connect(function()
 		if Flags.pij ~= true then return end
 		local _, _, h = lc()
@@ -5953,13 +6656,13 @@ do local __howf = function()
 	-- ------------------------------------------------------------ tab icons
 	task.spawn(function()
 		local want = {
-			Player = {"person-circle", "person-crop-circle", "user-circle", "person", "face-smile"},
+			Player = {"person-circle", "person-crop-circle", "user-circle", "person", "user", "face-smile"},
 			Stats = {"chart-bar", "bar-chart", "chart-line-up", "trend-up", "analytics", "chart-pie", "trophy"},
 			General = {"fishing-hook", "anchor", "fish", "waves", "shrimp"},
 			Status = {"clipboard-list", "list-bullets", "target", "compass", "flag", "star", "clipboard", "trophy"},
 			Misc = {"puzzle-piece", "sparkle", "wrench", "toolbox", "lightning-bolt", "bolt", "dice", "four-squares-grid"},
-			Shop = {"storefront", "store", "shopping-bag", "shopping-cart", "coins", "shopping-basket"},
-			Teleport = {"map-pin", "location", "compass", "globe", "rocket", "person-teleport"},
+			Shop = {"storefront", "store", "shopping-bag", "shopping-cart", "cart", "bag", "coins", "money", "shopping-basket"},
+			Teleport = {"map-pin", "location", "globe", "rocket", "arrows-out", "person-teleport"},
 			Visual = {"palette", "sparkle", "eye"},
 			Setting = {"gear-six", "sliders", "gear"},
 		}
@@ -6002,7 +6705,16 @@ do local __howf = function()
 				end
 			end
 		end
+		for _, T in gw.Tabs do
+			local l1 = iconLab(T)
+			if l1 then warn("[HowHub] tab icon " .. T.Name .. " = " .. l1.Text) end
+		end
 	end)
 end
 __howf() end
+do
+	local okf, errf = pcall(function() gw:EnableFavorites() end)
+	if not okf then warn("Favorites Failed: " .. tostring(errf)) end
+	pcall(function() gw:Ready() end)
+end
 ge.__HowLoaded = true
