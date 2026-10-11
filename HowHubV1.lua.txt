@@ -1701,14 +1701,14 @@ local function ss(f)
 		end
 		if f.sd and f.sc then
 			stay, stayP = true, f.sc
-			pz(h, CFrame.lookAlong(pos, f.sd))
+			if not getgenv().__HowFaceCam then pz(h, CFrame.lookAlong(pos, f.sd)) end
 		else
 			-- No clean sea direction: still stand in place, cast at any open water nearby.
 			local q = tg(h)
 			if q then
 				stay, stayP = true, q
 				local fd = Vector3.new(q.X - pos.X, 0, q.Z - pos.Z)
-				if fd.Magnitude > 0.1 then pz(h, CFrame.lookAlong(pos, fd.Unit)) end
+				if fd.Magnitude > 0.1 and not getgenv().__HowFaceCam then pz(h, CFrame.lookAlong(pos, fd.Unit)) end
 			end
 		end
 	end
@@ -1914,8 +1914,8 @@ L.Dict = {VI = {
     ["Rod Quest"] = "Nhiệm vụ cần câu",
     ["Soul Quest"] = "Nhiệm vụ linh hồn",
     ["Skill Market"] = "Chợ kỹ năng",
-    ["Unit"] = "Đơn vị",
-    ["Aura"] = "Hào quang",
+    ["Unit"] = "Unit",
+    ["Aura"] = "Aura",
     ["Gacha"] = "Gacha",
     ["Rod"] = "Cần câu",
     ["Island"] = "Đảo",
@@ -1932,7 +1932,7 @@ L.Dict = {VI = {
     ["Speed / Jump"] = "Tốc độ / Nhảy",
     ["Movement"] = "Di chuyển",
     ["Name (only you can see)"] = "Tên (chỉ mình bạn thấy)",
-    ["Language & Format"] = "Ngôn ngữ & Định dạng",
+    ["Language & Format"] = "Ngôn ngữ & định dạng",
     ["Select Farm Island"] = "Chọn đảo để cày",
     ["Auto Fish"] = "Tự động câu cá",
     ["Auto Boss"] = "Tự động đánh Boss",
@@ -1940,27 +1940,29 @@ L.Dict = {VI = {
     ["Show Fishing Time"] = "Hiện thời gian câu",
     ["Show Money Earned"] = "Hiện tiền kiếm được",
     ["Show Total Damage"] = "Hiện tổng sát thương",
+    ["Face Camera Direction"] = "Nhân vật quay theo hướng camera",
+    ["List Active Features"] = "Liệt kê tính năng đang bật",
     ["Reset Time / Fish / Money"] = "Đặt lại Thời gian / Cá / Tiền",
     ["Lock Fish Rarity"] = "Độ hiếm cá cần khóa",
     ["Auto Lock Fish"] = "Tự động khóa cá",
     ["Lock Specific Fish"] = "Cá cụ thể cần khóa",
     ["Auto Lock Specific Fish"] = "Tự động khóa cá cụ thể",
     ["Select Rod Quest"] = "Chọn nhiệm vụ cần câu",
-    ["Auto Rod Quest"] = "Tự động nhiệm vụ cần câu",
+    ["Auto Rod Quest"] = "Tự động làm nhiệm vụ cần câu",
     ["Auto Unlock Island"] = "Tự động mở khóa đảo",
-    ["Auto Daily Quest"] = "Tự động nhiệm vụ hằng ngày",
+    ["Auto Daily Quest"] = "Tự động làm nhiệm vụ hằng ngày",
     ["Select Soul Quest"] = "Chọn nhiệm vụ linh hồn",
-    ["Auto Soul Quest"] = "Tự động nhiệm vụ linh hồn",
+    ["Auto Soul Quest"] = "Tự động làm nhiệm vụ linh hồn",
     ["Sell Rarity"] = "Độ hiếm cần bán",
     ["Auto Sell"] = "Tự động bán",
     ["Delete Rarity"] = "Độ hiếm cần xóa",
-    ["Auto Delete Unit"] = "Tự động xóa đơn vị",
-    ["Auto Delete Aura"] = "Tự động xóa hào quang",
+    ["Auto Delete Unit"] = "Tự động xóa Unit",
+    ["Auto Delete Aura"] = "Tự động xóa Aura",
     ["Select Gacha"] = "Chọn Gacha",
     ["Select Roll"] = "Chọn số lần quay",
     ["Auto Roll"] = "Tự động quay",
     ["Select Skills"] = "Chọn kỹ năng",
-    ["Auto Buy Skill Market"] = "Tự động mua chợ kỹ năng",
+    ["Auto Buy Skill Market"] = "Tự động mua kỹ năng ở chợ",
     ["Select Rod"] = "Chọn cần câu",
     ["Auto Buy Rod"] = "Tự động mua cần câu",
     ["Select Island"] = "Chọn đảo",
@@ -1973,16 +1975,16 @@ L.Dict = {VI = {
     ["Safe"] = "An toàn",
     ["Hidden Fishing"] = "Câu cá ẩn",
     ["FPS Booster"] = "Tăng FPS",
-    ["Anti-Lag (No Graphics Reduction)"] = "Chống lag (không giảm đồ họa)",
+    ["Anti-Lag (No Graphics Reduction)"] = "Chống lag (giữ nguyên đồ họa)",
     ["Anti-AFK"] = "Chống AFK",
-    ["Toggle Button"] = "Nút bật UI",
-    ["Toggle Button Border"] = "Viền nút bật UI",
-    ["Toggle Button Border Thickness"] = "Độ dày viền nút bật UI",
-    ["Auto Rejoin"] = "Tự vào lại",
-    ["Auto Execute On Rejoin"] = "Tự chạy script khi rejoin",
-    ["Rejoin Script Source"] = "Nguồn script rejoin",
-    ["Damage Panel Up"] = "Bảng sát thương: Lên",
-    ["Damage Panel Down"] = "Bảng sát thương: Xuống",
+    ["Toggle Button"] = "Nút mở / đóng UI",
+    ["Toggle Button Border"] = "Viền nút mở / đóng UI",
+    ["Toggle Button Border Thickness"] = "Độ dày viền nút mở / đóng UI",
+    ["Auto Rejoin"] = "Tự động vào lại",
+    ["Auto Execute On Rejoin"] = "Tự động chạy script khi vào lại",
+    ["Rejoin Script Source"] = "Nguồn script khi vào lại",
+    ["Damage Panel Up"] = "Bảng sát thương: Đưa lên",
+    ["Damage Panel Down"] = "Bảng sát thương: Đưa xuống",
     ["Tween Speed"] = "Tốc độ di chuyển (Tween)",
     ["Theme"] = "Chủ đề",
     ["Custom Red"] = "Màu đỏ tùy chỉnh",
@@ -2005,7 +2007,7 @@ L.Dict = {VI = {
     ["RGB Cycle"] = "RGB chạy màu",
     ["Rainbow Wave"] = "Cầu vồng",
     ["Blend 2 Colors"] = "Phối 2 màu",
-    ["Pulse"] = "Nhấp nháy",
+    ["Pulse"] = "Nhịp sáng",
     ["Effect Speed"] = "Tốc độ hiệu ứng",
     ["Color Blend"] = "Phối màu",
     ["Blend Color 2"] = "Màu phối thứ 2",
@@ -2013,10 +2015,21 @@ L.Dict = {VI = {
     ["Blend Green"] = "Phối: xanh lá",
     ["Blend Blue"] = "Phối: xanh dương",
     ["Animate Blend"] = "Phối màu chuyển động",
-    ["Complementary"] = "Màu đối lập",
+    ["Complementary"] = "Màu bổ sung",
     ["Analogous"] = "Màu liền kề",
     ["Triadic"] = "Bộ ba màu",
     ["Split-Complementary"] = "Đối lập chia đôi",
+    ["Analogous Left"] = "Liền kề (trái)",
+    ["Analogous Wide"] = "Liền kề (rộng)",
+    ["Triadic Left"] = "Bộ ba (đảo)",
+    ["Split Left"] = "Đối lập chia đôi (đảo)",
+    ["Tetradic"] = "Bộ bốn màu",
+    ["Square"] = "Hình vuông màu",
+    ["Neon Complement"] = "Đối lập neon",
+    ["Lighter"] = "Nhạt hơn",
+    ["Darker"] = "Đậm hơn",
+    ["Muted"] = "Dịu màu",
+    ["Vivid"] = "Rực rỡ",
     ["UI Opacity (%)"] = "Độ mờ giao diện (%)",
     ["Show Mini UI"] = "Hiện giao diện mini",
     ["Mini: Boss Time"] = "Mini: Thời gian Boss",
@@ -2032,7 +2045,7 @@ L.Dict = {VI = {
     ["Enable Walk Speed"] = "Bật tốc độ chạy",
     ["Enable Jump Power"] = "Bật lực nhảy",
     ["Infinite Jump"] = "Nhảy vô hạn",
-    ["Noclip"] = "Xuyên tường",
+    ["Noclip"] = "Xuyên tường (Noclip)",
     ["Overhead Name"] = "Tên trên đầu",
     ["Apply Overhead Name"] = "Áp dụng tên trên đầu",
     ["Language"] = "Ngôn ngữ",
@@ -2069,6 +2082,92 @@ L.Dict = {VI = {
     ["Myriad (100K = 10 Wan)"] = "Hệ vạn (100k = 10 vạn)",
 }}
 L.Subs = {VI = {{"Locked", "Đã khóa"}, {" Left$", " còn lại"}, {"%- In ", "- sau "}, {"Accepted", "Đã nhận"}, {"| Avg:", "| TB:"}}}
+L.Glos = {VI = {
+	{"One book is turned into V2; the hub unequips it before completing", "Một cuốn sách sẽ được nâng lên V2; hub sẽ tháo nó ra trước khi hoàn thành"},
+	{"Counts only after accepting", "Chỉ tính sau khi nhận nhiệm vụ"},
+	{"counts only after accepting", "chỉ tính sau khi nhận nhiệm vụ"},
+	{"Any Legendary fish from", "Cá Huyền thoại bất kỳ từ"},
+	{"Any Uncommon fish from", "Cá Ít gặp bất kỳ từ"},
+	{"Any Mythical fish from", "Cá Thần thoại bất kỳ từ"},
+	{"No Soul Quest Selected", "Chưa chọn nhiệm vụ linh hồn"},
+	{"No Rod Quest Selected", "Chưa chọn nhiệm vụ cần câu"},
+	{"Any Common fish from", "Cá Thường bất kỳ từ"},
+	{"Any Divine fish from", "Cá Thần thánh bất kỳ từ"},
+	{"Any fish, any island", "Mọi loại cá, mọi đảo"},
+	{"Fish With Legacy Rod", "Cá bằng cần câu cũ"},
+	{"Legendary fish from", "Cá Huyền thoại từ"},
+	{"Uncommon fish from", "Cá Ít gặp từ"},
+	{"Any Rare fish from", "Cá Hiếm bất kỳ từ"},
+	{"Any Epic fish from", "Cá Sử thi bất kỳ từ"},
+	{"Mythical fish from", "Cá Thần thoại từ"},
+	{"Any Huge fish from", "Cá Khổng lồ bất kỳ từ"},
+	{"Common fish from", "Cá Thường từ"},
+	{"Divine fish from", "Cá Thần thánh từ"},
+	{"Final Blows With", "Đòn kết liễu bằng"},
+	{"Bamboo Fragments", "Mảnh tre"},
+	{"Volcanic Island", "Đảo Núi Lửa"},
+	{"Rare fish from", "Cá Hiếm từ"},
+	{"Epic fish from", "Cá Sử thi từ"},
+	{"Legendary Fish", "Cá Huyền thoại"},
+	{"Legendary fish", "cá Huyền thoại"},
+	{"Huge fish from", "Cá Khổng lồ từ"},
+	{"Starter Island", "Đảo Khởi Đầu"},
+	{"Uncommon Fish", "Cá Ít gặp"},
+	{"Uncommon fish", "cá Ít gặp"},
+	{"Mythical Fish", "Cá Thần thoại"},
+	{"Mythical fish", "cá Thần thoại"},
+	{"Jungle Island", "Đảo Rừng Rậm"},
+	{"Desert Island", "Đảo Sa Mạc"},
+	{"Fossil Island", "Đảo Hóa Thạch"},
+	{"Fish Merchant", "Thương nhân cá"},
+	{"Boat Merchant", "Thương nhân thuyền"},
+	{"Unit Summoner", "Người triệu hồi Unit"},
+	{"Equipped Soul", "Linh hồn đang dùng"},
+	{"Rod Merchant", "Thương nhân cần câu"},
+	{"Skill Master", "Thầy kỹ năng"},
+	{"Auras Dealer", "Người bán Aura"},
+	{"Skill Market", "Chợ kỹ năng"},
+	{"Daily Quests", "Nhiệm vụ hằng ngày"},
+	{"Common Fish", "Cá Thường"},
+	{"Common fish", "cá Thường"},
+	{"Divine Fish", "Cá Thần thánh"},
+	{"Divine fish", "cá Thần thánh"},
+	{"Snow Island", "Đảo Tuyết"},
+	{"Final Blows", "Đòn kết liễu"},
+	{"No Options", "Không có lựa chọn"},
+	{"Rare Fish", "Cá Hiếm"},
+	{"Rare fish", "cá Hiếm"},
+	{"Epic Fish", "Cá Sử thi"},
+	{"Epic fish", "cá Sử thi"},
+	{"Legendary", "Huyền thoại"},
+	{"Huge Fish", "Cá Khổng lồ"},
+	{"Huge fish", "cá Khổng lồ"},
+	{"Completed", "Hoàn thành"},
+	{"Uncommon", "Ít gặp"},
+	{"Mythical", "Thần thoại"},
+	{"Guardian", "Hộ vệ"},
+	{"Any fish", "Mọi loại cá"},
+	{"No Stock", "Hết hàng"},
+	{"Accepted", "Đã nhận"},
+	{"Unlocked", "Đã mở khóa"},
+	{"Common", "Thường"},
+	{"Divine", "Thần thánh"},
+	{"Guide", "Hướng dẫn viên"},
+	{"Books", "Sách"},
+	{"Coins", "Coin"},
+	{"Owned", "Đã sở hữu"},
+	{"Human", "Người"},
+	{"Rare", "Hiếm"},
+	{"Epic", "Sử thi"},
+	{"Huge", "Khổng lồ"},
+	{"Need", "Cần"},
+	{"Best", "Tốt nhất"},
+	{"none", "không có"},
+	{"From", "Từ"},
+	{"Own", "Sở hữu"},
+	{"Yes", "Có"},
+	{"No", "Không"},
+}}
 
 
 do
@@ -2077,8 +2176,8 @@ do
 		["Cancel"] = "Hủy", ["Enable"] = "Bật", ["Pinned"] = "Đã ghim", ["Unpinned"] = "Đã bỏ ghim",
 		["Favorites"] = "Yêu thích", ["Loading..."] = "Đang tải...", ["Ready"] = "Sẵn sàng",
 		["Active"] = "Đang bật", ["Interface"] = "Giao diện", ["Presets"] = "Cấu hình mẫu",
-		["Intro Animation"] = "Animation khởi động", ["Open / Close Animation"] = "Animation mở / đóng UI",
-		["Section Animation"] = "Animation thu gọn mục", ["Section Arrow Style"] = "Kiểu nút mũi tên",
+		["Intro Animation"] = "Hiệu ứng khởi động", ["Open / Close Animation"] = "Hiệu ứng mở / đóng UI",
+		["Section Animation"] = "Hiệu ứng thu gọn mục", ["Section Arrow Style"] = "Kiểu nút mũi tên",
 		["Section Header Size"] = "Cỡ thanh tiêu đề mục", ["Notifications"] = "Thông báo",
 		["UI Toggle Key"] = "Phím ẩn / hiện UI", ["Reset Risk Warnings"] = "Đặt lại cảnh báo rủi ro",
 		["Collapse All Sections"] = "Thu gọn tất cả mục", ["Expand All Sections"] = "Mở rộng tất cả mục",
@@ -2091,6 +2190,9 @@ do
 		["Pill + Chevron"] = "Nút tròn + mũi tên", ["Chevron Only"] = "Chỉ mũi tên", ["Plus / Minus"] = "Dấu + / -",
 		["This feature changes your character's movement and can be detected by the game. Enable anyway?"] = "Chức năng này thay đổi chuyển động nhân vật và có thể bị game phát hiện. Vẫn bật?",
 		["Automatic teleporting can be detected by the game and may get your account flagged. Enable anyway?"] = "Dịch chuyển tự động có thể bị game phát hiện và khiến tài khoản bị gắn cờ. Vẫn bật?",
+		["Mini UI Opacity (%)"] = "Độ mờ giao diện mini (%)",
+		["Damage / DPS Panel Opacity (%)"] = "Độ mờ bảng Sát thương / DPS (%)",
+		["None"] = "Không có",
 	}
 	for k, v in add do
 		if L.Dict.VI[k] == nil then L.Dict.VI[k] = v end
@@ -2105,6 +2207,9 @@ EN = {
 ["Stay In Place (Face Sea)"] = "Keeps your character standing still and turned toward open sea while fishing.",
 ["Show Fishing Time"] = "Shows the total fishing time in the Mini UI.",
 ["Show Money Earned"] = "Shows coin earned, coin per hour (Coin/h) and the last sale in the Mini UI.",
+["Show Total Damage"] = "Shows the total damage dealt since the last reset in the Mini UI.",
+["Face Camera Direction"] = "Turns your character to face the same direction as the camera.",
+["List Active Features"] = "Shows which features the Mini UI counts as active.",
 ["Reset Time / Fish / Money"] = "Sets the fishing time, fish count, money and damage counters back to zero.",
 ["Lock Fish Rarity"] = "Choose which fish rarities should be locked so they are protected.",
 ["Auto Lock Fish"] = "Automatically locks fish of the selected rarities.",
@@ -2192,6 +2297,9 @@ VI = {
 ["Stay In Place (Face Sea)"] = "Giữ nhân vật đứng yên và quay mặt ra biển khi câu cá.",
 ["Show Fishing Time"] = "Hiện tổng thời gian câu cá trong giao diện mini.",
 ["Show Money Earned"] = "Hiện coin kiếm được, coin mỗi giờ (Coin/h) và lần bán gần nhất trong giao diện mini.",
+["Show Total Damage"] = "Hiện tổng sát thương đã gây ra từ lần đặt lại gần nhất trong giao diện mini.",
+["Face Camera Direction"] = "Cho nhân vật quay theo cùng hướng với camera.",
+["List Active Features"] = "Cho biết giao diện mini đang đếm những chức năng nào là đang bật.",
 ["Reset Time / Fish / Money"] = "Đặt lại thời gian câu, số cá, tiền và sát thương về 0.",
 ["Lock Fish Rarity"] = "Chọn độ hiếm của cá cần khóa để được bảo vệ.",
 ["Auto Lock Fish"] = "Tự động khóa cá thuộc các độ hiếm đã chọn.",
@@ -2282,7 +2390,16 @@ local function tr(s)
 	if not d then return s end
 	local hit = d[s]
 	if hit then return hit end
-	if not s:find("[:\n]") then return s end
+	local gl = L.Glos[L.Lang] or {}
+	local function glos(x)
+		for _, p in gl do
+			p[3] = p[3] or ("%f[%w]" .. p[1]:gsub("%p", "%%%0") .. "%f[%W]")
+			p[4] = p[4] or p[2]:gsub("%%", "%%%%")
+			x = x:gsub(p[3], p[4])
+		end
+		return x
+	end
+	if not s:find("[:\n]") then return glos(s) end
 	local subs = L.Subs[L.Lang] or {}
 	local out = {}
 	for line in (s .. "\n"):gmatch("(.-)\n") do
@@ -2291,11 +2408,12 @@ local function tr(s)
 			local pre, rest = line:match("^([^:]+): (.*)$")
 			if pre and d[pre] then
 				for _, p in subs do rest = (rest:gsub(p[1], p[2])) end
+				rest = glos(rest)
 				if rest:find(": ", 1, true) then rest = tr(rest) end
 				h = d[pre] .. ": " .. rest
 			end
 		end
-		table.insert(out, h or line)
+		table.insert(out, h or glos(line))
 	end
 	return table.concat(out, "\n")
 end
@@ -2553,7 +2671,18 @@ function L:Window(o)
 		end)
 	end
 	local function counted(e)
-		return e.Kind == "Toggle" and e.v == true and not tostring(e.Name):find("^Show ") and not tostring(e.Name):find("^Mini:")
+		return e.Kind == "Toggle" and e.v == true and not tostring(e.Name):find("^Show ") and not tostring(e.Name):find("^Mini:") and e.Name ~= "Stay In Place (Face Sea)"
+	end
+	function W:ActiveNames()
+		local t = {}
+		for _, T in W.Tabs do
+			if T.Name ~= "Setting" and T.Name ~= "Favorites" then
+				for _, e in T.Rows do
+					if counted(e) then table.insert(t, T.Name .. ": " .. tostring(e.Name)) end
+				end
+			end
+		end
+		return t
 	end
 	function W:CountActive()
 		local n = 0
@@ -4543,6 +4672,7 @@ ft = gt:Toggle({Name = "Auto Fish", Flag = "af", Callback = function(v)
 end})
 gt:Toggle({Name = "Auto Boss", Flag = "ab"})
 gt:Toggle({Name = "Stay In Place (Face Sea)", Default = true, Flag = "stay", Callback = function(v) getgenv().__HowStay = v == true end})
+gt:Toggle({Name = "Face Camera Direction", Flag = "fcam", Callback = function(v) getgenv().__HowFaceCam = v == true end})
 ge.__HowBagLabel = gt:Label({Text = "Fish In Bag: --"})
 ge.__HowFarmLabel = gt:Label({Text = "Time / Money: --"})
 gt:Toggle({Name = "Show Fishing Time", Default = true, Flag = "sft"})
@@ -6013,6 +6143,7 @@ do local __howf = function()
 
 	task.spawn(function()
 		while alive() do
+			local okLoop, errLoop = pcall(function()
 			fr.Visible = Flags.mu ~= false
 			do local tt0 = L.Tr("How Hub | Stats"); if ttl.Text ~= tt0 then ttl.Text = tt0 end end
 			for _, im in pngIcons do im.ImageColor3 = cT.ac end
@@ -6054,6 +6185,8 @@ do local __howf = function()
 				local n, l, cap = bagCounts()
 				setL(ge.__HowBagLabel, `Fish In Bag: {bagStr(n, cap)} | Locked: {l}`)
 			end)
+			end)
+			if not okLoop and not X.warned then X.warned = true; warn("[HowHub] mini UI update error: " .. tostring(errLoop)) end
 			task.wait(0.25)
 		end
 	end)
@@ -6113,6 +6246,40 @@ do local __howf = function()
 		{"Magenta", 230, 40, 220}, {"Violet", 130, 70, 220}, {"Indigo", 85, 60, 200}, {"Lavender", 185, 160, 255},
 		{"Brown", 160, 105, 70}, {"Silver", 190, 195, 205}, {"Slate", 100, 116, 139},
 		{"Neon Green", 57, 255, 20}, {"Neon Pink", 255, 20, 147}, {"Neon Blue", 20, 140, 255},
+		{"Cobalt", 0, 71, 171},
+		{"Royal Blue", 65, 105, 225},
+		{"Ice", 170, 230, 255},
+		{"Ocean Blue", 0, 119, 190},
+		{"Cerulean", 0, 160, 220},
+		{"Jade", 0, 168, 107},
+		{"Seafoam", 120, 220, 180},
+		{"Chartreuse", 127, 255, 0},
+		{"Lemon", 255, 247, 60},
+		{"Sunflower", 255, 200, 30},
+		{"Tangerine", 255, 120, 0},
+		{"Vermilion", 227, 66, 52},
+		{"Scarlet", 255, 36, 0},
+		{"Ruby", 224, 17, 95},
+		{"Burgundy", 128, 0, 32},
+		{"Fuchsia", 255, 0, 255},
+		{"Orchid", 218, 112, 214},
+		{"Plum", 142, 69, 133},
+		{"Amethyst", 153, 102, 204},
+		{"Lilac", 200, 162, 200},
+		{"Salmon", 250, 128, 114},
+		{"Blush", 255, 182, 193},
+		{"Sand", 230, 200, 150},
+		{"Chocolate", 123, 63, 0},
+		{"Bronze", 205, 127, 50},
+		{"Copper", 184, 115, 51},
+		{"Steel", 70, 130, 180},
+		{"Charcoal", 54, 69, 79},
+		{"Ivory", 255, 255, 240},
+		{"Aurora", 0, 255, 170},
+		{"Electric Purple", 191, 0, 255},
+		{"Neon Yellow", 240, 255, 0},
+		{"Neon Orange", 255, 95, 31},
+		{"Cotton Candy", 255, 188, 217},
 	}
 	local pNames, pMap = {}, {}
 	for _, p in presets do
@@ -6137,6 +6304,20 @@ do local __howf = function()
 		{"Mono", {18, 18, 18}, {28, 28, 28}, {40, 40, 40}, {56, 56, 56}, {235, 235, 235}},
 		{"Gold Black", {14, 14, 14}, {24, 22, 18}, {36, 32, 24}, {52, 46, 32}, {255, 195, 0}},
 		{"Mint Ice", {16, 30, 32}, {22, 42, 44}, {30, 58, 60}, {40, 78, 80}, {120, 240, 210}},
+		{"Aurora", {18, 36, 30}, {26, 51, 42}, {34, 69, 57}, {43, 87, 72}, {0, 255, 170}},
+		{"Royal Purple", {29, 25, 36}, {41, 36, 51}, {56, 48, 69}, {71, 60, 87}, {160, 100, 255}},
+		{"Rose Gold", {36, 30, 28}, {51, 43, 41}, {69, 58, 55}, {87, 73, 69}, {235, 160, 140}},
+		{"Ice Blue", {28, 33, 36}, {41, 47, 51}, {55, 63, 69}, {69, 80, 87}, {150, 215, 255}},
+		{"Toxic", {28, 36, 21}, {41, 51, 29}, {55, 69, 40}, {69, 87, 50}, {150, 255, 40}},
+		{"Crimson Night", {36, 21, 23}, {51, 30, 33}, {69, 40, 45}, {87, 51, 57}, {230, 40, 70}},
+		{"Arctic", {30, 35, 36}, {43, 50, 51}, {59, 67, 69}, {74, 84, 87}, {190, 235, 245}},
+		{"Autumn", {36, 28, 22}, {51, 40, 31}, {69, 55, 42}, {87, 69, 52}, {240, 140, 50}},
+		{"Candy", {36, 26, 32}, {51, 38, 46}, {69, 51, 61}, {87, 64, 77}, {255, 120, 200}},
+		{"Matrix", {21, 36, 25}, {29, 51, 36}, {40, 69, 48}, {50, 87, 60}, {40, 255, 100}},
+		{"Steel Blue", {26, 31, 36}, {36, 44, 51}, {49, 59, 69}, {62, 74, 87}, {90, 150, 210}},
+		{"Sunrise", {36, 31, 23}, {51, 45, 32}, {69, 60, 44}, {87, 76, 55}, {255, 190, 70}},
+		{"Violet Storm", {27, 25, 36}, {39, 35, 51}, {52, 48, 69}, {66, 60, 87}, {120, 90, 230}},
+		{"Emerald Night", {21, 36, 30}, {30, 51, 43}, {41, 69, 57}, {52, 87, 72}, {40, 210, 140}},
 	}
 	local PAL_AUTO = "Auto (Theme)"
 	local palOpts, schemeMap = {PAL_AUTO}, {}
@@ -6166,7 +6347,7 @@ do local __howf = function()
 	end
 
 	-- Blend: second colour (harmony of the accent, a preset, or custom RGB)
-	local harmony = {"Complementary", "Analogous", "Triadic", "Split-Complementary"}
+	local harmony = {"Complementary", "Analogous", "Analogous Left", "Analogous Wide", "Triadic", "Triadic Left", "Split-Complementary", "Split Left", "Tetradic", "Square", "Neon Complement", "Lighter", "Darker", "Muted", "Vivid"}
 	local blendOpts = {}
 	for _, n in harmony do table.insert(blendOpts, n) end
 	for _, p in presets do table.insert(blendOpts, p[1]) end
@@ -6178,6 +6359,17 @@ do local __howf = function()
 		elseif v == "Analogous" then return Color3.fromHSV((h + 0.083) % 1, s, vv)
 		elseif v == "Triadic" then return Color3.fromHSV((h + 0.333) % 1, s, vv)
 		elseif v == "Split-Complementary" then return Color3.fromHSV((h + 0.417) % 1, s, vv)
+		elseif v == "Analogous Left" then return Color3.fromHSV((h - 0.083) % 1, s, vv)
+		elseif v == "Analogous Wide" then return Color3.fromHSV((h + 0.167) % 1, s, vv)
+		elseif v == "Triadic Left" then return Color3.fromHSV((h + 0.667) % 1, s, vv)
+		elseif v == "Split Left" then return Color3.fromHSV((h + 0.583) % 1, s, vv)
+		elseif v == "Tetradic" then return Color3.fromHSV((h + 0.167) % 1, s, vv)
+		elseif v == "Square" then return Color3.fromHSV((h + 0.25) % 1, s, vv)
+		elseif v == "Neon Complement" then return Color3.fromHSV((h + 0.5) % 1, 1, 1)
+		elseif v == "Lighter" then return Color3.fromHSV(h, math.clamp(s * 0.45, 0, 1), 1)
+		elseif v == "Darker" then return Color3.fromHSV(h, s, vv * 0.45)
+		elseif v == "Muted" then return Color3.fromHSV(h, s * 0.35, vv * 0.85)
+		elseif v == "Vivid" then return Color3.fromHSV(h, 1, 1)
 		elseif v == "Custom" then
 			return Color3.fromRGB(
 				math.clamp(tonumber(Flags.br) or 255, 0, 255),
@@ -6567,6 +6759,10 @@ do local __howf = function()
 	ts:Slider({Name = "Mini UI Opacity (%)", Min = 1, Max = 100, Step = 1, Default = 100, Flag = "muo"})
 	ts:Slider({Name = "Damage / DPS Panel Opacity (%)", Min = 1, Max = 100, Step = 1, Default = 100, Flag = "dpo"})
 	ts:Button({Name = "Reset Mini UI Position", Callback = function() fr.Position = UDim2.new(0, 12, 0, 80) end})
+	ts:Button({Name = "List Active Features", Callback = function()
+		local t = gw:ActiveNames()
+		gw:Notify({Title = "Active: " .. #t, Text = #t > 0 and table.concat(t, "\n") or "None", Time = 10})
+	end})
 	ts:Button({Name = "Reset Time / Fish / Money", Callback = resetStats})
 
 	-- ------------------------------------------------ Interface / Presets (new)
@@ -6897,6 +7093,32 @@ task.spawn(function()
 			end)
 		end
 	end
+end)
+
+-- ------------------------------------------------------------ face camera direction
+task.spawn(function()
+	local Rs, Pl = game:GetService("RunService"), game:GetService("Players")
+	local wasOn, hum0 = false, nil
+	local cn
+	cn = Rs.RenderStepped:Connect(function()
+		if X.dead then cn:Disconnect() return end
+		local on = getgenv().__HowFaceCam == true
+		local ch = Pl.LocalPlayer.Character
+		local hrp = ch and ch:FindFirstChild("HumanoidRootPart")
+		local hum = ch and ch:FindFirstChildOfClass("Humanoid")
+		if on and hrp and hum then
+			local cam = workspace.CurrentCamera
+			local look = cam and Vector3.new(cam.CFrame.LookVector.X, 0, cam.CFrame.LookVector.Z)
+			if look and look.Magnitude > 0.01 then
+				hum.AutoRotate = false
+				hrp.CFrame = CFrame.lookAlong(hrp.Position, look.Unit)
+				wasOn, hum0 = true, hum
+			end
+		elseif wasOn then
+			wasOn = false
+			pcall(function() if hum0 then hum0.AutoRotate = true end end)
+		end
+	end)
 end)
 end
 __howf() end
