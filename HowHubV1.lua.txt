@@ -2702,8 +2702,27 @@ function L:Window(o)
 				cl()
 			end}
 		end))
+		return b
 	end
-	hd({AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, 0, 1, 0), Size = UDim2.fromOffset(16, 16)}, true, true)
+	local rzh = hd({AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, 0, 1, 0), Size = UDim2.fromOffset(28, 28)}, true, true)
+	-- Visible resize grip: a curved line hugging the bottom-right corner of the main window (this is the resize handle)
+	do
+		local box = mk("Frame", {Name = "ResizeArc", AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -4, 1, -4), Size = UDim2.fromOffset(18, 18), BackgroundTransparency = 1, ClipsDescendants = true, Active = false, Parent = rzh})
+		local ring = mk("Frame", {Name = "Ring", Position = UDim2.fromOffset(-15, -15), Size = UDim2.fromOffset(30, 30), BackgroundTransparency = 1, Active = false, Parent = box}, {mk("UICorner", {CornerRadius = UDim.new(0.5, 0)})})
+		local arcS = mk("UIStroke", {Color = c.dm, Thickness = 2, Transparency = 0.25, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Parent = ring})
+		local down = false
+		local function hot(on) tw(arcS, {Color = on and c.ac or c.dm, Transparency = on and 0 or 0.25}) end
+		rzh.MouseEnter:Connect(function() hot(true) end)
+		rzh.MouseLeave:Connect(function() if not down then hot(false) end end)
+		rzh.InputBegan:Connect(function(i)
+			if i.UserInputType ~= mb and i.UserInputType ~= tc then return end
+			down = true
+			hot(true)
+			i.Changed:Connect(function()
+				if i.UserInputState == Enum.UserInputState.End then down = false; hot(false) end
+			end)
+		end)
+	end
 	hd({AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, -16, 0, 10)}, false, true)
 	hd({AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, th), Size = UDim2.new(0, 10, 1, -(th + 16))}, true, false)
 	table.insert(W.cn, sg:GetPropertyChangedSignal("AbsoluteSize"):Connect(fx))
@@ -3281,15 +3300,34 @@ function L:Window(o)
 				if W.fc then W.fc() end
 				W.fc, ov.Visible, ch.Text = close, true, "chevron-small-up"
 				local s, bp = sc.Scale, (box.AbsolutePosition - mn.AbsolutePosition) / sc.Scale
-				local h = math.max(math.min(#e.Options, 5), 1) * 32 + 8
+				local sh = r.Searchable and 36 or 0
+				local h = math.max(math.min(#e.Options, 5), 1) * 32 + 8 + sh
 				local y = bp.Y + 32
 				if y + h > wh - 8 then y = bp.Y - h - 4 end
 				fy = mk("Frame", {Position = UDim2.fromOffset(bp.X, y), Size = UDim2.fromOffset(box.AbsoluteSize.X / s, h), BackgroundColor3 = c.cd, BorderSizePixel = 0, Parent = ov}, {rc(6), sk(0.85), pd(4, 4, 4, 4)})
-				local ls = mk("ScrollingFrame", {Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 3, ScrollBarImageColor3 = c.dm, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(), ScrollingDirection = Enum.ScrollingDirection.Y, Parent = fy}, {ll(0)})
+				local ls = mk("ScrollingFrame", {Position = UDim2.fromOffset(0, sh), Size = UDim2.new(1, 0, 1, -sh), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 3, ScrollBarImageColor3 = c.dm, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(), ScrollingDirection = Enum.ScrollingDirection.Y, Parent = fy}, {ll(0)})
 				if #e.Options == 0 then tl({Text = "No Options", TextSize = 13, TextColor3 = c.dm, Position = UDim2.fromOffset(10, 0), Size = UDim2.new(1, -10, 0, 32), Parent = ls}) end
+				local btns = {}
+				if r.Searchable then
+					local sbx2 = mk("Frame", {Size = UDim2.new(1, 0, 0, 30), BackgroundColor3 = c.bg, BorderSizePixel = 0, Parent = fy}, {rc(5), sk(0.85)})
+					ig({Text = "magnifying-glass", TextSize = 14, TextColor3 = c.dm, Position = UDim2.fromOffset(8, 0), Size = UDim2.fromOffset(16, 30), TextXAlignment = Enum.TextXAlignment.Center, Active = false, Parent = sbx2})
+					local sx2 = mk("TextBox", {BackgroundTransparency = 1, ClearTextOnFocus = false, Position = UDim2.fromOffset(30, 0), Size = UDim2.new(1, -36, 1, 0), Font = fn, TextSize = 13, TextColor3 = c.tx, PlaceholderText = tr("Search"), PlaceholderColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Left, Text = "", Parent = sbx2})
+					sx2:GetPropertyChangedSignal("Text"):Connect(function()
+						local q = sx2.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
+						local shown = 0
+						for _, it in btns do
+							local ok2 = q == "" or it.s:lower():find(q, 1, true) ~= nil or tr(it.s):lower():find(q, 1, true) ~= nil
+							it.b.Visible = ok2
+							if ok2 then shown += 1 end
+						end
+						ls.CanvasPosition = Vector2.new(0, 0)
+						fy.Size = UDim2.fromOffset(box.AbsoluteSize.X / sc.Scale, math.max(math.min(shown, 5), 1) * 32 + 8 + sh)
+					end)
+				end
 				for n, s in e.Options do
 					local sel = has(s)
 					local b = bt({Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = c.hv, BackgroundTransparency = sel and 0 or 1, LayoutOrder = n, Parent = ls}, {rc(4)})
+					btns[#btns + 1] = {b = b, s = s}
 					tl({Text = tr(s), TextSize = 13, Position = UDim2.fromOffset(10, 0), Size = UDim2.new(1, -36, 1, 0), TextTruncate = Enum.TextTruncate.AtEnd, Parent = b})
 					local ck = ig({Text = "check", TextSize = 14, TextColor3 = c.ac, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 0), Size = UDim2.fromOffset(16, 32), TextXAlignment = Enum.TextXAlignment.Center, Visible = sel, Parent = b})
 					b.MouseEnter:Connect(function() if uis.MouseEnabled then tw(b, {BackgroundTransparency = 0}) end end)
@@ -4565,7 +4603,7 @@ do
     table.sort(names)
     if #names == 0 then names = {"(fish list unavailable)"} end
     local lockNames, nameWorker = {}, nil
-    gt:Dropdown({Name = "Lock Specific Fish", Options = names, Default = {}, Multi = true, Flag = "lfn", Callback = function(v)
+    gt:Dropdown({Name = "Lock Specific Fish", Options = names, Default = {}, Multi = true, Searchable = true, Flag = "lfn", Callback = function(v)
         lockNames = type(v) == "table" and v or {}
     end})
     gt:Toggle({Name = "Auto Lock Specific Fish", Flag = "alfn", Callback = function(v)
@@ -5758,6 +5796,17 @@ do local __howf = function()
 	-- ------------------------------------------- Mini UI line icons
 	task.spawn(function()
 		local ts2 = game:GetService("TextService")
+		-- `ir` is local to the UI library closure and is nil out here, which silently killed this whole block
+		local ir = Font.new("rbxasset://LuaPackages/Packages/_Index/BuilderIcons/BuilderIcons/BuilderIcons.json")
+		-- make sure the icon font is loaded before measuring anything
+		pcall(function()
+			local tmp = Instance.new("TextLabel")
+			tmp.FontFace, tmp.Text, tmp.BackgroundTransparency, tmp.TextTransparency = ir, "trophy", 1, 1
+			tmp.Size, tmp.Parent = UDim2.fromOffset(1, 1), hud
+			game:GetService("ContentProvider"):PreloadAsync({tmp})
+			tmp:Destroy()
+		end)
+		task.wait(0.5)
 		local function wid(nm)
 			local ok, b = pcall(function()
 				local pr = Instance.new("GetTextBoundsParams")
@@ -5766,14 +5815,16 @@ do local __howf = function()
 			end)
 			return ok and b and b.X or nil
 		end
-		local ref = wid("trophy")
-		local checkable = ref and ref > 4
+		-- a real icon is ONE glyph (about as wide as a known-good one); a missing name renders as plain text (much wider)
+		local ref = 0
+		for _, k in {"trophy", "gear", "eye"} do ref = math.max(ref, wid(k) or 0) end
+		local checkable = ref > 4 and ref <= 26
 		local function valid(nm)
-			if not checkable then return true end
+			if not checkable then return false end
 			local w = wid(nm)
-			return w and math.abs(w - ref) <= 4
+			return w ~= nil and w > 4 and w <= ref + 6
 		end
-		-- last entry of each list is a name already used elsewhere in the hub (known to render)
+		-- last entry of each list is a name already used elsewhere in the hub (known to render); it is ALWAYS used as fallback
 		local want = {
 			{"skull", "crown", "flag", "star", "trophy"},
 			{"clock", "timer", "hourglass", "gear"},
@@ -5784,27 +5835,23 @@ do local __howf = function()
 			{"receipt", "tag", "coins", "shopping-basket"},
 			{"lightning-bolt", "bolt", "power", "sparkle", "gear"},
 		}
-		-- if validation is impossible, skip the guesses and use the safe last entry
-		if not checkable then
-			for i, l in want do want[i] = {l[#l]} end
-		end
 		for i, lab in labels do
-			for _, nm in want[i] or {} do
-				if valid(nm) then
-					local pad = Instance.new("UIPadding")
-					pad.PaddingLeft = UDim.new(0, 21)
-					pad.Parent = lab
-					local ic = Instance.new("TextLabel")
-					ic.Name = "Icon"
-					ic.BackgroundTransparency, ic.Active = 1, false
-					ic.FontFace, ic.TextSize, ic.TextColor3 = ir, 15, cT.ac
-					ic.Text = nm
-					ic.Position, ic.Size = UDim2.fromOffset(-21, 0), UDim2.fromOffset(17, 17)
-					ic.TextXAlignment, ic.TextYAlignment = Enum.TextXAlignment.Center, Enum.TextYAlignment.Center
-					ic.Parent = lab
-					break
-				end
+			local list = want[i] or {"gear"}
+			local pick = list[#list]
+			for _, nm in list do
+				if valid(nm) then pick = nm break end
 			end
+			local pad = Instance.new("UIPadding")
+			pad.PaddingLeft = UDim.new(0, 21)
+			pad.Parent = lab
+			local ic = Instance.new("TextLabel")
+			ic.Name = "Icon"
+			ic.BackgroundTransparency, ic.Active, ic.ZIndex = 1, false, 2
+			ic.FontFace, ic.TextSize, ic.TextColor3 = ir, 15, cT.ac
+			ic.Text = pick
+			ic.Position, ic.Size = UDim2.fromOffset(-21, 0), UDim2.fromOffset(17, 17)
+			ic.TextXAlignment, ic.TextYAlignment = Enum.TextXAlignment.Center, Enum.TextYAlignment.Center
+			ic.Parent = lab
 		end
 	end)
 
@@ -5816,7 +5863,7 @@ do local __howf = function()
 	dp.Size, dp.AutomaticSize = UDim2.fromOffset(0, 0), Enum.AutomaticSize.XY
 	dp.Position = UDim2.new(1, -8, 0.8, 0)
 	dp.BackgroundColor3, dp.BorderSizePixel = cT.bg, 0
-	dp.BackgroundTransparency = 1 - math.clamp(tonumber(Flags.uo) or 100, 1, 100) / 100
+	dp.BackgroundTransparency = 1 - math.clamp(tonumber(Flags.dpo) or 100, 1, 100) / 100
 	dp.Parent = hud
 	local dpIn = Instance.new("Frame")
 	dpIn.BackgroundTransparency, dpIn.BorderSizePixel = 1, 0
@@ -5886,11 +5933,12 @@ do local __howf = function()
 			fr.Visible = Flags.mu ~= false
 			do local tt0 = L.Tr("How Hub | Stats"); if ttl.Text ~= tt0 then ttl.Text = tt0 end end
 			mscale.Scale = math.clamp((tonumber(Flags.mus) or 100) / 100, 0.5, 1.5)
+			fr.BackgroundTransparency = math.clamp(1 - math.clamp(tonumber(Flags.muo) or 100, 1, 100) / 100 + 0.08, 0, 1)
 			do
 				local on = Flags.dmp ~= false
 				dp.Visible = on
 				if on then
-					dp.BackgroundTransparency = 1 - math.clamp(tonumber(Flags.uo) or 100, 1, 100) / 100
+					dp.BackgroundTransparency = 1 - math.clamp(tonumber(Flags.dpo) or 100, 1, 100) / 100
 					local t1 = L.Tr("Damage: " .. fmtN(S.dmg))
 					local t2 = L.Tr("DPS: " .. fmtN(dps(), 1))
 					local t3 = L.Tr("Avg: " .. fmtN(dpsAvg(), 1))
@@ -6210,7 +6258,6 @@ do local __howf = function()
 				end
 			end)
 		end
-		fr.BackgroundTransparency = math.clamp(tr + 0.08, 0, 1)
 		-- Outer borders never follow the opacity: pin them to their normal look.
 		pcall(function()
 			local ms = gw.Main:FindFirstChildOfClass("UIStroke")
@@ -6433,6 +6480,8 @@ do local __howf = function()
 	ts:Button({Name = "Damage Panel Up", Callback = function() dmyStep(-3) end})
 	ts:Button({Name = "Damage Panel Down", Callback = function() dmyStep(3) end})
 	ts:Slider({Name = "Mini UI Scale (%)", Min = 50, Max = 150, Step = 5, Default = 100, Flag = "mus"})
+	ts:Slider({Name = "Mini UI Opacity (%)", Min = 1, Max = 100, Step = 1, Default = 100, Flag = "muo"})
+	ts:Slider({Name = "Damage / DPS Panel Opacity (%)", Min = 1, Max = 100, Step = 1, Default = 100, Flag = "dpo"})
 	ts:Button({Name = "Reset Mini UI Position", Callback = function() fr.Position = UDim2.new(0, 12, 0, 80) end})
 	ts:Button({Name = "Reset Time / Fish / Money", Callback = resetStats})
 
