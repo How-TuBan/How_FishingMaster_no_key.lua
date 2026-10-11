@@ -1852,7 +1852,7 @@ end
 local L = (function()
 local ps, uis, tws, gs, hs = game:GetService("Players"), game:GetService("UserInputService"), game:GetService("TweenService"), game:GetService("GuiService"), game:GetService("HttpService")
 local ge = getgenv and getgenv() or _G
-local c = {bg = Color3.fromRGB(20, 29, 36), cd = Color3.fromRGB(29, 41, 51), hv = Color3.fromRGB(39, 56, 69), pr = Color3.fromRGB(49, 70, 87), tx = Color3.fromRGB(244, 240, 232), dm = Color3.fromRGB(168, 164, 156), ac = Color3.fromRGB(33, 150, 243), er = Color3.fromRGB(214, 106, 94)}
+local c = {bg = Color3.fromRGB(20, 29, 36), cd = Color3.fromRGB(29, 41, 51), hv = Color3.fromRGB(39, 56, 69), pr = Color3.fromRGB(49, 70, 87), tx = Color3.fromRGB(255, 255, 255), dm = Color3.fromRGB(168, 164, 156), ac = Color3.fromRGB(33, 150, 243), er = Color3.fromRGB(214, 106, 94), gn = Color3.fromRGB(46, 204, 113)}
 local fn, fb, ww, wh, nw, th = Enum.Font.BuilderSansMedium, Enum.Font.BuilderSansBold, 580, 340, 150, 40
 local ip = "rbxasset://LuaPackages/Packages/_Index/BuilderIcons/BuilderIcons/BuilderIcons.json"
 local ir, ib = Font.new(ip), Font.new(ip, Enum.FontWeight.Bold)
@@ -1939,6 +1939,7 @@ L.Dict = {VI = {
     ["Stay In Place (Face Sea)"] = "Đứng yên tại chỗ (quay mặt ra biển)",
     ["Show Fishing Time"] = "Hiện thời gian câu",
     ["Show Money Earned"] = "Hiện tiền kiếm được",
+    ["Show Total Damage"] = "Hiện tổng sát thương",
     ["Reset Time / Fish / Money"] = "Đặt lại Thời gian / Cá / Tiền",
     ["Lock Fish Rarity"] = "Độ hiếm cá cần khóa",
     ["Auto Lock Fish"] = "Tự động khóa cá",
@@ -2975,8 +2976,8 @@ function L:Window(o)
 			local ar = ig({Text = "chevron-small-down", TextSize = 18, TextColor3 = c.ac, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(20, 20), TextXAlignment = Enum.TextXAlignment.Center, Parent = pill})
 			local pm = tl({Text = "-", Font = fb, TextSize = 20, TextColor3 = c.ac, AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(20, 20), TextXAlignment = Enum.TextXAlignment.Center, Visible = false, Parent = pill})
 			local bd = mk("Frame", {Name = "ActiveBadge", AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -40, 0.5, 0), Size = UDim2.fromOffset(0, 20), AutomaticSize = Enum.AutomaticSize.X, BackgroundTransparency = 1, Visible = false, Parent = l}, {mk("UIListLayout", {FillDirection = Enum.FillDirection.Horizontal, HorizontalAlignment = Enum.HorizontalAlignment.Right, VerticalAlignment = Enum.VerticalAlignment.Center, Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder})})
-			mk("Frame", {Size = UDim2.fromOffset(6, 6), BackgroundColor3 = c.ac, BorderSizePixel = 0, LayoutOrder = 1, Parent = bd}, {rc(3)})
-			local ct = tl({Text = "", Font = fb, TextSize = 12, TextColor3 = c.ac, Size = UDim2.fromOffset(0, 20), AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = 2, Parent = bd})
+			mk("Frame", {Size = UDim2.fromOffset(6, 6), BackgroundColor3 = c.gn, BorderSizePixel = 0, LayoutOrder = 1, Parent = bd}, {rc(3)})
+			local ct = tl({Text = "", Font = fb, TextSize = 12, TextColor3 = c.gn, Size = UDim2.fromOffset(0, 20), AutomaticSize = Enum.AutomaticSize.X, LayoutOrder = 2, Parent = bd})
 			local hst = l:FindFirstChild("RowBorder")
 
 			function so.base() return W.arrow == "Chevron Only" and 1 or 0.85 end
@@ -3000,7 +3001,7 @@ function L:Window(o)
 					if e.SecObj == so and counted(e) then n = n + 1 end
 				end
 				bd.Visible = n > 0
-				l.TextColor3 = n > 0 and c.ac or c.tx
+				l.TextColor3 = c.tx
 				ct.Text = n .. " " .. tr("On"):lower()
 			end
 			local function hover(on)
@@ -3092,7 +3093,7 @@ function L:Window(o)
 		function T:Label(r)
 			r = r or {}
 			local f = mk("Frame", {Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = c.cd, BorderSizePixel = 0, Parent = p}, {rc(6), rk(), pd(12, 12, 10, 10)})
-			local l = tl({Text = tostring(r.Text or ""), TextSize = 13, TextColor3 = c.dm, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, TextWrapped = true, Parent = f})
+			local l = tl({Text = tostring(r.Text or ""), TextSize = 13, TextColor3 = c.tx, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, TextWrapped = true, Parent = f})
 			local k0 = l.Text; reg[l] = k0; l.Text = tr(k0)
 			return txt(add({Row = f, Kind = "Label", Name = k0, Tab = T, Sec = T.sec}), l)
 		end
@@ -4546,6 +4547,7 @@ ge.__HowBagLabel = gt:Label({Text = "Fish In Bag: --"})
 ge.__HowFarmLabel = gt:Label({Text = "Time / Money: --"})
 gt:Toggle({Name = "Show Fishing Time", Default = true, Flag = "sft"})
 gt:Toggle({Name = "Show Money Earned", Default = true, Flag = "smo"})
+gt:Toggle({Name = "Show Total Damage", Default = true, Flag = "std"})
 gt:Button({Name = "Reset Time / Fish / Money", Callback = function() if ge.__HowReset then ge.__HowReset() end end})
 gt:Section({Name = "Lock Fish"})
 
@@ -5586,10 +5588,10 @@ do local __howf = function()
 	local function alive() return not X.dead and gw.Gui and gw.Gui.Parent ~= nil end
 
 	-- ---------------------------------------------------------------- stats
-	local S = {t = 0, mt = 0, ft = 0, fish = 0, boss = 0, money = 0, fm = 0, last = 0, dmg = 0, rar = {}, ev = {}, fs = nil}
+	local S = {t = 0, mt = 0, ft = 0, fish = 0, boss = 0, money = 0, fm = 0, last = 0, dmg = 0, tdmg = 0, rar = {}, ev = {}, fs = nil}
 	local lastActive, lastGain, lastDmgT = 0, 0, 0
 	local function resetStats()
-		S.t, S.mt, S.ft, S.fish, S.boss, S.money, S.fm, S.last, S.dmg, S.rar, S.ev, S.fs = 0, 0, 0, 0, 0, 0, 0, 0, 0, {}, {}, nil
+		S.t, S.mt, S.ft, S.fish, S.boss, S.money, S.fm, S.last, S.dmg, S.tdmg, S.rar, S.ev, S.fs = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, {}, {}, nil
 		lastGain = 0
 	end
 	local function trimEv(now)
@@ -5616,6 +5618,7 @@ do local __howf = function()
 		if lastHp and hp < lastHp then
 			local d = lastHp - hp
 			S.dmg += d
+			S.tdmg += d
 			lastDmgT = os.clock()
 			table.insert(S.ev, {os.clock(), d})
 		end
@@ -5737,6 +5740,7 @@ do local __howf = function()
 		{flag = "smo", get = function() return "Earned: " .. fmtN(S.money) end},
 		{flag = "smo", get = function() return "Coin/h: " .. fmtN(moneyPerHour()) end},
 		{flag = "smo", get = function() return "Last Sell: +" .. fmtN(S.last) end},
+		{flag = "std", get = function() return "Total Damage: " .. fmtN(S.tdmg) end},
 		{flag = "mac", get = function() return "Active: " .. tostring(gw:CountActive()) end},
 	}
 
@@ -5769,7 +5773,7 @@ do local __howf = function()
 	bar.Active = true
 	bar.Parent = fr
 	local ttl = Instance.new("TextLabel")
-	ttl.BackgroundTransparency, ttl.Size, ttl.Text = 1, UDim2.new(1, -52, 1, 0), "How Hub | Stats"
+	ttl.BackgroundTransparency, ttl.Size, ttl.Text = 1, UDim2.new(1, -26, 1, 0), "How Hub | Stats"
 	ttl.Font, ttl.TextSize, ttl.TextColor3, ttl.TextXAlignment = Enum.Font.BuilderSansBold, 14, cT.ac, Enum.TextXAlignment.Left
 	ttl.Parent = bar
 	local function smallBtn(txt, xoff)
@@ -5781,7 +5785,7 @@ do local __howf = function()
 		local c2 = Instance.new("UICorner"); c2.CornerRadius = UDim.new(0, 5); c2.Parent = b
 		return b
 	end
-	local btnReset, btnCol = smallBtn("R", 0), smallBtn("-", -26)
+	local btnCol = smallBtn("-", 0)
 
 	local labels = {}
 	for i, ln in lines do
@@ -5833,6 +5837,7 @@ do local __howf = function()
 			{"coins", "money", "dollar", "four-squares-grid"},
 			{"trend-up", "chart-line-up", "arrow-up", "chart-bar", "eye"},
 			{"receipt", "tag", "coins", "shopping-basket"},
+			{"sword", "swords", "fire", "flame", "target", "crosshair", "eye"},
 			{"lightning-bolt", "bolt", "power", "sparkle", "gear"},
 		}
 		for i, lab in labels do
@@ -5894,7 +5899,6 @@ do local __howf = function()
 	end
 
 	local collapsed = false
-	btnReset.Activated:Connect(resetStats)
 	btnCol.Activated:Connect(function()
 		collapsed = not collapsed
 		btnCol.Text = collapsed and "+" or "-"
@@ -6572,7 +6576,7 @@ do local __howf = function()
 					"Total Earned: " .. fmtN(S.money),
 					"Coin / Hour: " .. fmtN(moneyPerHour()),
 					"Last Sell: +" .. fmtN(S.last),
-					"Total Damage: " .. fmtN(S.dmg),
+					"Total Damage: " .. fmtN(S.tdmg),
 					"DPS (Live): " .. fmtN(dps(), 2),
 					"DPS (Avg): " .. fmtN(dpsAvg(), 2),
 					`In Bag: {bagStr(n, cap)} | Locked: {l}`,
@@ -6592,7 +6596,7 @@ do local __howf = function()
 	end)
 
 	-- ----------------------------------------------------------- Player tab
-	local tp = gw:Tab({Name = "Player", Icon = "person-teleport"})
+	local tp = gw:Tab({Name = "Player", Icon = "person"})
 	local PL = {speed = 16, jump = 50}
 
 	local function numPair(title, lo, hi, def, fl, key2)
@@ -6705,15 +6709,15 @@ do local __howf = function()
 	-- ------------------------------------------------------------ tab icons
 	task.spawn(function()
 		local want = {
-			Player = {"person-circle", "person-crop-circle", "user-circle", "person", "user", "face-smile"},
-			Stats = {"chart-bar", "bar-chart", "chart-line-up", "trend-up", "analytics", "chart-pie", "trophy"},
-			General = {"fishing-hook", "anchor", "fish", "waves", "shrimp"},
-			Status = {"clipboard-list", "list-bullets", "target", "compass", "flag", "star", "clipboard", "trophy"},
-			Misc = {"puzzle-piece", "sparkle", "wrench", "toolbox", "lightning-bolt", "bolt", "dice", "four-squares-grid"},
-			Shop = {"storefront", "store", "shopping-bag", "shopping-cart", "cart", "bag", "coins", "money", "shopping-basket"},
-			Teleport = {"map-pin", "location", "globe", "rocket", "arrows-out", "person-teleport"},
-			Visual = {"palette", "sparkle", "eye"},
-			Setting = {"gear-six", "sliders", "gear"},
+			Player = {"heart", "star", "people", "users", "group", "person", "user"},
+			Stats = {"chart-bar", "bar-chart", "chart-line-up", "analytics", "chart-pie", "trophy"},
+			General = {"house", "home", "fishing-hook", "anchor", "fish", "shrimp"},
+			Status = {"trophy", "crown", "flag", "clipboard-list", "target", "clipboard"},
+			Misc = {"package", "box", "cube", "puzzle-piece", "toolbox", "wrench", "dice", "four-squares-grid"},
+			Shop = {"shopping-cart", "cart", "shopping-basket", "storefront", "store", "shopping-bag", "bag", "coins"},
+			Teleport = {"key", "rocket", "paper-plane", "globe", "map-pin", "compass", "arrows-out", "person-teleport"},
+			Visual = {"eye", "palette", "paint-brush", "sparkle"},
+			Setting = {"gear", "gear-six", "sliders"},
 		}
 		local ts2 = game:GetService("TextService")
 		local used = {}
@@ -6759,6 +6763,61 @@ do local __howf = function()
 			if l1 then warn("[HowHub] tab icon " .. T.Name .. " = " .. l1.Text) end
 		end
 	end)
+
+-- ------------------------------------------------------------ tab icons (PNG pack)
+task.spawn(function()
+	local data = {
+		General = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAQCCAML9g7xCfz9+PcK9QePGjmgAAAAlwSFlzAAADbgAAA24BEEuaYwAAAc1JREFUWIXFV+2ShSAI9VvULN7/aXcqu3ctMMuZXf42HOEABxJ/ZfNkBl+yaOUQAEREq0YRfB5BUB4RwwiCQUSMMICQhxEsDmahVgB0AwjTCuD/NQQcZEFuAPatO2gcATCT3/1RP/ZVUs+HNyI+mmyzaPvL91EGJoeIV/N9Q22CJ5y7EzCW8Ubf5e84d7Rds7iwz/c1MTDZe90pBXQC0XUryUw8Hp40D1WBFJYxgEdRTFwRepeTYQEQbVcUfAiI2LOcgJqhj/UIGoRRBCFbQfQpkmxE0WIS8tYGcTICHKcJDU3KX5e49t4yJQqB6weox2AvuiEwGB6v5dMMH8x6JMbwUCB1giCFNVPZpoNxUxFKkaAYyg8ZW+4A2LqHPgDg/BHjlrG9AfgykC6xrPdhrZStEgQh1KWeqR7xSAAc3+Y2IbsRoqCOaOGG0s2INpDl02f3tGSJGiZZB9BckGQXyN8M3CCQo1QAKrFhEBK544AAEI7qbu5CSATAaYKa/oX1M79w3nOJ1cPSCJcKL5UehcaOD5cyFHOfxg7N3VgOE+qKUU5rrZe7C6NUcuCYL3Wf3/8VmZ0wr1//YYIuhY9B53co4OYtjDg9OIpemxDiB7Z5UXDnkB9IAAAAAElFTkSuQmCC",
+		Status = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAQN+fYBAgv++Aj88wUK9w+E8luwAAAAlwSFlzAAADbgAAA24BEEuaYwAAAdpJREFUWIXFV9uWgyAM5B6CVvn/r91DW64iEt09O0+thxmTkIzA/gaaK5QAiw+wAIA7N7NvMkoK34Pd9vWajUuXHCHcUIPDkP3Boh7RA8Sry3eT9IBNH+h69vXfPA57QuN7vzQxIJHv/VYLWLKAr5LgdL7fnwrgvwvUDXlDgP+uQH+Ah6h7kdqI3vtnnXwQoLfy8lQAagFFFmiGyZAFWmOjVtG2nmSIA320xZWiYDvOrChJ2K1VWMm9LKovDCn+GEWhoG/MkvcibwS9D9/InnQjgQAb+cnQ5oSsjL94k4GamwiZJifm8P2swmRDm7TO1XOAc+6MOeY40lvWk0Ouj1P0jXmrayBCR1zW8T1FIgfDCjcJ/18X/K2qeusmqK+aKiSg05Lk7Kn4FuAih3JFtsWruE9QmMqNz0Lty3p8vOyiPiXVhzTrOpUQWD2E1lX37AnSFJWOcJqZ3GZiZ0e8HACAVB9pjYXLWPnZMa1kWOP6R9UDUmFgbn0LnQO+J1B0x/Rlo0Jx+j494Z+AIyrDit6QzChEPsNlaTrLXbeWFMjpPNkJ8vjUOZfEwBFwgj4czbmOOufPFWEdCPjrmydj68AbjnetLvqXXyEVpaMNR/f1TwvgcP7uTQJj7Ae+KJ0uuda3XgAAAABJRU5ErkJggg==",
+		Misc = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAn88wQO9wv4Agj1AQYN+vJS2WqwAAAAlwSFlzAAADbgAAA24BEEuaYwAAAYVJREFUWIXdltuShCAMRAG5K5r//9otp0YgYritL7v9NKg53WFSKPv3ctJNt7is1igAUMaHZbzaAJbgWm49lTL+sHcGwH7YtdKS1FwAwKFdDQLK2KKl7Vt7Sfj0xOpFCQEwXMewzD48oHiILW8EBGwF8HFJzZyQnQSsBODcNr+mTl3gGHLdkzTgbOYIG4KoeOvahaUKOCVstu/pn4kXm4CzGX4FThvKRgBpz9KFh1BDAPMegI8AXFzz6iiSAHlbvwKoTxIJkHMA/QBw1booc+s3O1tGAD6uUz1T1cIc4NLMqAzQN0mGOY6WowCBBy4HeLKoIp8BOicJy2YAPVJ4SWeAzknCkm8CthkAelXOAPJ6Vr40mtoRoPNQy2XeBUxMkn0XEMYBAQEmJkm+C5iYJFzPluePGFKi/HS0fQfjR8oW5fi8bMhQH4u6K4TSRHlnCNK+L0TNvidEw74Vom1fD9FlT4fotadCDNg/hRizL0MM2+MQM/Z5iEn7K8S8/TfEb+z/ghhjP96Mi9fJrqKuAAAAAElFTkSuQmCC",
+		Shop = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMA3xDvMGCPQIC/zyBQn69wCCQX6wAAAAlwSFlzAAADbgAAA24BEEuaYwAAAO5JREFUWIXtl8EOgyAQRFcBgaq1//+1TXpowrCYHUgvDXPfB/hAFpn5aXz8pmOcxwvCAjLULyxgA0BmAQkAGwuIAEgswAOAFzEMcGMW0aPjAeeYRfT45AFhzCJuhMAD1kGLsBHWm6mmRpbiG7QSqlNDJk/ABPwLYI9D8R3nXE3HQsrLDi8iQ45yIo4GwEJOQ0kR/NEHovaTCwCroabIji6qpug+dctDiqw7FlLkUQFIkcpupERqtzUlEiXSIiuJpEi9byVE6m0nIVKRyInU6+0iWy2XWaQmURiRqkSxi2w/Powi228Ho8iGxJm+iMgbIgOB9MWeLt4AAAAASUVORK5CYII=",
+		Teleport = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMA388wEO9gQIC/IJ9Qj3CvN/aPGwAAAAlwSFlzAAADbgAAA24BEEuaYwAAAhhJREFUWIWll9cWgyAMQEGGYQj8/9f2uCBoQIt5s5gr2Snri5hn8fBKT6xJKSUzjJAqbaLsIMClQ+IgQJ2AJMcAWT/NXwGDbuSnvhrTZ/oEwCDgDIMb1WfMr1bocX3G1lT8ov8VoOOaSyYM5pE0ZxSmsTxYSiJNI/o2IRmJhMaAZQAAGGD+1Z4hcgxQEf6oSB0TKfGdJwKn1Vfhzwg7tdW3gD70R6H6+impblI96z8QHu5/WNHWhxfqvQYlrwZwBwDgrmFRrerU9XsuGytcfdIKZuUBU8XLGnzW8IK82SnAGGP2JA74lLbBXy7ps+3cXwz0JADFYMGjdfOHrM7pOBQzp+pp/0nin+jqLtGaq3523IExkR84CcD8+aq/UUuZ9wH+ZsCB9V1A+aisG+opFn2Dak8ZMN1ycpeALtYFmEZVAQptFwANAAZ3AUsDEN8COibEVwBel0UWj+q1C1jjRfVGieqVApTTcKmkXRyOLlnP+ZQT3W1bmEu1UProOBBe0PgCdDGV/F+/pm/66FZ0OeONRDLmkRXK1y2TXhfwN1eChMMoDusT9ivdlqsS3Ieo0AB66+710G1M2OodBThUUEWlNdyqzp2SWo50EcslqKEBuAc/TcbcB25ztH0erkx2tpsivLP5ijeA7opCNsNaHvaspyWnvyJtfrjNJCzLm83fnil88x68/g9sg7vMJuPC//+g5yytNxhjPw5WZtQwZAORAAAAAElFTkSuQmCC",
+		Visual = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAz59QEO8gv4BAMGCPcN+vPy24XwAAAAlwSFlzAAADbgAAA24BEEuaYwAAAzdJREFUWIWVV9mW5SAIdBcTE/3/r50DLnG/Pbz07URLKKAw7GBGgrdoHu7rtHBl6hY6dhYe8z8AcWX2/tNeswWI8f0NIV9/AIiRu3PoIUaLP/gWIXp1OB6Je/GX3wNEvk1J3oUkuANA1BsEkd8TUfaIsOJS1S1EwtGFGBc+iO+t+cXCKopmfxTTk9neIRf3wsFHnxBCt//K0T+OdvH82EEyvyoL2QLQAntV9sQYoZkp0U0QgP8/LZiYys1MXsD3Tre0JvLmtsEy37ggusRCWYBagsfqcNNSNfpQfDbltwL7rEtIy4bqau93JBUftZJhbJk9ImUsjez2G6OrpSAZkyuAyFXytTWSDlzPWd2GzwwAPO628+rBBV4ovFMm4lCi0C93swslAtW0b1tDvQ92iYmgvKPeyurENS0fUonFclNJTfrxQua3Meyfq8sRLgJkfoytvBxIQ6G4+LDGIgXPAkDPIRM/qumrDLARDzMBxDQUTB17CKCR3aWEmlnXastJb3XugLgDeFfzRXcyQrYFkHPdoIVxSFMZTAA6YLijAiTjIN3VAowkaiHTKUdl5yJHw7ErmzRqSIVoxmaaLS21WJBfsEHR/SQcJT1G/mCICiMRVKKFbkHCRLsxVFRpCTND7SUBa0WVwRJqrYqWbPX0TdEJrkv1QKegGFC38OlC1Y0p6uIHAIjHVDMkKFfeXzXBuZow1QQiSv+TrNrkkxJW5tqzabN4C2GmSFex0iU0IJ9WyKAMDNdVcRpUH4LKHtA0oBT67GfpkLG/UxdRZQZjVLnHJdfCR2xx4I6jEYJ6y0BTJOL2y0NCICb9uom0SdpvmyIv6UxkCSd5XMtArMdZ+pMPKKOtH0V2e81M48t+N7AyXPtudtuLLrmgOeuKIFmj/370qDFDjFeAsSHIgB3uZw+tdH3ms1HVcW/Y6Y4Z6KVPtPPtnfvaSkEK/yU/9O77xYyjoLXkHrZMWNx1JQCIw3dCBbCbs6c71A4g7j5afiPkFPsNwG+ElPDtfhSV437Mgl0Mt9aON3RUutMnF5k5jJO/fXcy2Ut4Y78O/yCWXtjzJ+cQyDNg2P/79CZzNwS8sAu4d2czxv4B8h6PHug0AdwAAAAASUVORK5CYII=",
+		Setting = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAYCCf78+AvxBAMN9wUI+vEXgJ3AAAAAlwSFlzAAADbgAAA24BEEuaYwAAAk1JREFUWIW1V9m2gyAMBGRXlP//2nvA1mbDqvc0j2LGZJgsqh9a8oeZR18J9bDpib/5+FcbHwCsAKDqBwAWAoT7/roiu09jwADr3e8T/1pD+uo0bfoVqJ6pO4QwixM57Uk7nwfuHaKovPbTzP3zyEs0LoxobwFURwEYad+MqHu960/EqS84MANE5psE7AaInJ74wyTuXsFuM+DAyzFuPqVU/CYDIG0L4gvlE6EkTlzhhX29oHO1sCxJgRMhuc5wXnwIfi+x7PAbtL6xErrMyuHS6zBiBFpOiMb2/YhiWiO9K1rR8HVrlMqEtoaZzlKAZwuL90U6FBwpRwjeBCJcvcejopJbwgEk7t+lD0PAPRJ+0QyKY8Fy8dDfAMpmwgjKGmYKuhqS2SZnsGcNuT3EarAK/bC/JCrYqQehicr9qDg5QJ0T5v8NwJ6NAJog2cvrkAMjACQ+UIJSUfQXr0d6FjHZh03C+GoCF9KSryEL46OVFKM8KDGETep8TQqcsSSN2lYK/HZas+KMOWFW2Sx1/72z83BbZgW9PWdxAO8TVhisrV8ZUJKto0klunSAEvhg6ifGtxMbli557m/D0Vlj0h5nspEVxODj4DVbukgbtB5ARI+DlHdnQzKxU+kjxWjaId1gdR7UEM99uLYOypjaycp5adNYxv4qDndMQMCJP9nxZTvf/C9k8G+A0xTkXkbsDOCSEn4KYNA1urQbbg3h/BcQLHQfxYNV+MKfT3k1Hlgx7xXtgnuz1CBwQ+i1Pgk/OkMIWvHRTc/+wM9NKfUHxkCSWaYrJWwAAAAASUVORK5CYII=",
+		Stats = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAMGDfIHCPQL+Az+8Qr59QLTlWhQAAAAlwSFlzAAADbgAAA24BEEuaYwAAAW1JREFUWIXtldFyhCAMRRGBJCKW///ajgK7QCLV9qmt9w0JZ0hyierRn5QB87O8KMY4YyAL8D1AiJUQHembV5qjII+BaLoGkM4nzZfOwzkgXrqCHgDoCsANAMsVAKZ0ySFywqsd6znAH5FbWgBYCvjuiy1Ry2lnTReZv0KbA0R/VtAcyUwYmhwgnhIoBbIcc3MWsrsv7e6tDxGwHXFeGaql1Np0I1VFS4Dl2MLOT6+NVhKhOIYBrGQMx85PMV+OAYwEKO1mtQIOEHOIcevKTeUAB2jxnff2xvKRA/YEgRw2HO86S6bdcAIonFLQ2fZ+yd2mMSB3BAUnvY08BOyV2iQrmzwMzBeAzVP/GlewDn0VPwRAk/qkqa1sRAHgsFJ7e2KtdQKgGU/tY+cmt/cAfI7DPQB/JRw7BNS/Io9Og3CvMSDPkM3W3bkDcIHAKAOVzC2A0E0+kR7AA3gAvweg67mt1VQvcTjWH/17KaXUJxfAY3uF4hBnAAAAAElFTkSuQmCC",
+		Player = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAIO/fz4AwQL8Qr2CfcI9Q3SQhiwAAAAlwSFlzAAADbgAAA24BEEuaYwAAAf1JREFUWIWlV1mShSAMZFM2l9z/tFMgDwkYB6H/pOg2GwkwGqvOWF+2teD+MAoaKHN4/j97PWTLvSGPd2O0eWNfMJr+ewc9wBBWLH30gOWBbl0/H8DYhv8Q9zcoO8dvFD7Zn7wo+ft3PookH+ED3NnszH+N7IQe4wPoOQOyCYMRgByFY1zgiAKfa+iGjEU4zgcIHeacEfDfTnGLUI0Dx+BGSORwFUASEDMCwBib4tMCTXMnuj1pAffINbMSLaMWyCyNutxWZBsXrsZn2edta9knt7JcNMo7FnD5Kxb5+vuwxYdgVpACnLHttx6QPnx5aE/cQZGAi/1VArjU7c70zwtepsFoKYF2YMVl0ywrQuBsdspnXUMItHNbfRMgXHDvAkUhbfXGK3XyWfdBQNQz+3h2zRcCWK7ygaeKqdOgSAHAd5fs6o6WUQ+sGoooFbZ73RMORAHU0kTeytH68guPxWMoeFc1VbmHg3huUC0vwTh9VA0wCEy39anBEqp/erTNDFcVA0vdsKTVTgAYT8+ea7xTFwyZK5sUSNd/ajqKeLfnO/kA+NX49CVrdEDfh4wPDVhRPIB8x/4G6IzWpd+Bqn/NXvenHxxfvdhaPmO+Oxdif6CHbHbWg6MfsLrDD0c/PKMV+2s01d7xfLZ62Ux7yTJu0U+he8X1/Ke3MMb+ACCvuB8utK0OAAAAAElFTkSuQmCC",
+	}
+	if not (writefile and getcustomasset) then return end
+	local A = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	local rev = {}
+	for i = 1, 64 do rev[A:sub(i, i)] = i - 1 end
+	local function dec(s)
+		local out, n, bits = {}, 0, 0
+		for ch in s:gmatch("[%w%+/]") do
+			n = n * 64 + rev[ch]
+			bits += 6
+			if bits >= 8 then
+				bits -= 8
+				local v = math.floor(n / 2 ^ bits)
+				out[#out + 1] = string.char(v)
+				n -= v * 2 ^ bits
+			end
+		end
+		return table.concat(out)
+	end
+	pcall(function() if makefolder and not (isfolder and isfolder("HowHub")) then makefolder("HowHub") end end)
+	task.wait(1.5)
+	for _, T in gw.Tabs do
+		local b64 = data[T.Name]
+		local lab
+		for _, d in T.Btn:GetChildren() do
+			if d:IsA("TextLabel") and d.FontFace.Family:find("BuilderIcons") then lab = d break end
+		end
+		if b64 and lab then
+			pcall(function()
+				local path = "HowHub/ico_" .. T.Name .. ".png"
+				writefile(path, dec(b64))
+				local img = Instance.new("ImageLabel")
+				img.Name, img.BackgroundTransparency, img.Active = "PngIcon", 1, false
+				img.AnchorPoint, img.Position, img.Size = Vector2.new(0.5, 0.5), UDim2.new(0, 20, 0.5, 0), UDim2.fromOffset(20, 20)
+				img.Image, img.ImageColor3 = getcustomasset(path), lab.TextColor3
+				img.Parent = T.Btn
+				lab.TextTransparency = 1
+				lab:GetPropertyChangedSignal("TextColor3"):Connect(function() img.ImageColor3 = lab.TextColor3 end)
+			end)
+		end
+	end
+end)
 end
 __howf() end
 do
