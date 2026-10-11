@@ -2047,6 +2047,24 @@ L.Dict = {VI = {
     ["Infinite Jump"] = "Nhảy vô hạn",
     ["Noclip"] = "Xuyên tường (Noclip)",
     ["Overhead Name"] = "Tên trên đầu",
+    ["Music"] = "Nhạc",
+    ["Music ID"] = "ID nhạc",
+    ["Sound ID"] = "ID âm thanh",
+    ["Play Music"] = "Phát nhạc",
+    ["Pause / Resume Music"] = "Tạm dừng / Tiếp tục nhạc",
+    ["Stop Music"] = "Dừng nhạc",
+    ["Music Volume"] = "Âm lượng nhạc",
+    ["Loop Music"] = "Lặp lại nhạc",
+    ["Music Playlist"] = "Danh sách nhạc",
+    ["Play Selected Song"] = "Phát bài đã chọn",
+    ["Next Song"] = "Bài tiếp theo",
+    ["Song Name"] = "Tên bài hát",
+    ["Add To Playlist"] = "Thêm vào danh sách",
+    ["Remove Selected Song"] = "Xoá bài đã chọn",
+    ["Song added to the playlist."] = "Đã thêm bài vào danh sách.",
+    ["Song removed from the playlist."] = "Đã xoá bài khỏi danh sách.",
+    ["Enter a valid Sound ID first."] = "Hãy nhập ID âm thanh hợp lệ trước.",
+    ["This Sound ID could not be loaded. Try another one."] = "Không tải được ID âm thanh này. Hãy thử ID khác.",
     ["Apply Overhead Name"] = "Áp dụng tên trên đầu",
     ["Language"] = "Ngôn ngữ",
     ["Number Format"] = "Định dạng số",
@@ -2284,6 +2302,18 @@ EN = {
 ["Infinite Jump"] = "Lets you jump again while in the air.",
 ["Noclip"] = "Lets your character pass through walls and objects.",
 ["Overhead Name"] = "The custom name shown above your character. Only you can see it.",
+["Music ID"] = "The Roblox audio ID (numbers only) to play. Copy it from the Creator Store audio page.",
+["Play Music"] = "Plays the audio ID you typed. Only you can hear it.",
+["Pause / Resume Music"] = "Pauses the music, or resumes it if it is paused.",
+["Stop Music"] = "Stops the music and resets it to the start.",
+["Music Volume"] = "How loud the music is.",
+["Loop Music"] = "Repeats the music when it ends.",
+["Music Playlist"] = "Your saved songs. Pick one, then press Play Selected Song.",
+["Play Selected Song"] = "Plays the song chosen in the playlist.",
+["Next Song"] = "Switches to the next song in the playlist and plays it.",
+["Song Name"] = "The name to save the Music ID under in your playlist.",
+["Add To Playlist"] = "Saves the Music ID and Song Name above into your playlist. It is kept for next time.",
+["Remove Selected Song"] = "Deletes the chosen song from your playlist.",
 ["Apply Overhead Name"] = "Turns the custom overhead name on or off.",
 ["Walk Speed Slider"] = "Drag to choose how fast your character runs. Turn on Enable Walk Speed to apply it.",
 ["Walk Speed (Type Number)"] = "Type an exact walk speed (16 to 200). It stays in sync with the slider.",
@@ -2374,6 +2404,18 @@ VI = {
 ["Infinite Jump"] = "Cho phép nhảy tiếp khi đang ở trên không.",
 ["Noclip"] = "Cho nhân vật đi xuyên tường và vật thể.",
 ["Overhead Name"] = "Tên tùy chỉnh hiện trên đầu nhân vật. Chỉ mình bạn thấy.",
+["Music ID"] = "ID âm thanh Roblox (chỉ gồm số) cần phát. Hãy sao chép từ trang âm thanh trên Creator Store.",
+["Play Music"] = "Phát ID âm thanh bạn đã nhập. Chỉ mình bạn nghe thấy.",
+["Pause / Resume Music"] = "Tạm dừng nhạc, hoặc tiếp tục nếu đang tạm dừng.",
+["Stop Music"] = "Dừng nhạc và đưa về đầu bài.",
+["Music Volume"] = "Độ lớn của nhạc.",
+["Loop Music"] = "Phát lại nhạc khi kết thúc.",
+["Music Playlist"] = "Các bài bạn đã lưu. Chọn một bài rồi bấm Phát bài đã chọn.",
+["Play Selected Song"] = "Phát bài đang chọn trong danh sách.",
+["Next Song"] = "Chuyển sang bài kế tiếp trong danh sách và phát.",
+["Song Name"] = "Tên dùng để lưu ID nhạc vào danh sách của bạn.",
+["Add To Playlist"] = "Lưu ID nhạc và tên bài ở trên vào danh sách. Danh sách được giữ cho lần sau.",
+["Remove Selected Song"] = "Xoá bài đang chọn khỏi danh sách.",
 ["Apply Overhead Name"] = "Bật hoặc tắt tên tùy chỉnh trên đầu.",
 ["Walk Speed Slider"] = "Kéo để chọn tốc độ chạy của nhân vật. Hãy bật 'Bật tốc độ chạy' để áp dụng.",
 ["Walk Speed (Type Number)"] = "Nhập chính xác tốc độ chạy (16 đến 200). Tự đồng bộ với thanh kéo.",
@@ -2381,6 +2423,266 @@ VI = {
 ["Jump Power (Type Number)"] = "Nhập chính xác lực nhảy (50 đến 200). Tự đồng bộ với thanh kéo.",
 },
 }
+
+-- ===== Extra translations (VI) =====
+do
+	local D = L.Dict.VI
+	local add = {
+		["Enter your key to continue"] = "Nhập key để tiếp tục",
+		["Key"] = "Key",
+		["Submit"] = "Xác nhận",
+		["Get Key"] = "Lấy key",
+		["Search"] = "Tìm kiếm",
+		["Custom name"] = "Tên tùy chỉnh",
+		["URL or file path"] = "URL hoặc đường dẫn tệp",
+		["Daily Quest"] = "Nhiệm vụ hằng ngày",
+		["Daily Quest Done"] = "Hoàn thành nhiệm vụ hằng ngày",
+		["Active"] = "Đang bật",
+		["Risk Warnings"] = "Cảnh báo rủi ro",
+		["Reset"] = "Đã đặt lại",
+		["Presets"] = "Cấu hình mẫu",
+		["Auto Execute"] = "Tự động chạy",
+		["Callback Failed"] = "Lỗi xử lý (callback)",
+		["Config Load Failed"] = "Tải cấu hình thất bại",
+		["Invalid Json"] = "JSON không hợp lệ",
+		["Effect List Failed: Catalog Error"] = "Tải danh sách hiệu ứng thất bại: lỗi danh mục",
+		["Player On Island, Hopping"] = "Có người chơi trên đảo, đang đổi server",
+		["Error"] = "Lỗi",
+		["FPS Booster"] = "Tăng FPS",
+		["Boss Scan Failed: Regions Missing"] = "Quét Boss thất bại: thiếu khu vực",
+		["Rejoin Script Source is empty"] = "Chưa nhập nguồn script khi vào lại",
+		["On - script will run after rejoin / server hop"] = "Bật - script sẽ tự chạy sau khi vào lại / đổi server",
+		["On — helps prevent idle timeout"] = "Bật — giúp tránh bị kick do đứng yên",
+		["Off — graphics restored"] = "Tắt — đã khôi phục đồ họa",
+		["Already On"] = "Đã bật rồi",
+		["Already Off"] = "Đã tắt rồi",
+		["Not Hooked"] = "Chưa cắn câu",
+		["Waiting"] = "Đang chờ",
+		["Visual"] = "Hình ảnh",
+		["Auto Fish Failed"] = "Tự động câu cá thất bại",
+		["Auto Island Failed"] = "Tự động đến đảo thất bại",
+		["Teleport Failed"] = "Dịch chuyển thất bại",
+		["Auto Roll Failed"] = "Tự động quay thất bại",
+		["Auto Buy Skill Market Failed"] = "Tự động mua kỹ năng thất bại",
+		["Auto Delete Unit Failed"] = "Tự động xóa Unit thất bại",
+		["Auto Delete Aura Failed"] = "Tự động xóa Aura thất bại",
+		["Auto Buy Rod Failed"] = "Tự động mua cần câu thất bại",
+		["Rod Merchant"] = "Thương nhân cần câu",
+		["Fish Merchant"] = "Thương nhân cá",
+		["Equip Timeout"] = "Hết thời gian trang bị",
+		["Notifications"] = "Thông báo",
+		["Normal"] = "Bình thường",
+		["Short"] = "Ngắn",
+		["Preset 1"] = "Mẫu 1",
+		["Preset 2"] = "Mẫu 2",
+		["Preset 3"] = "Mẫu 3",
+		["Preset 4"] = "Mẫu 4",
+		["Preset 5"] = "Mẫu 5",
+		["Twilight"] = "Chạng vạng", ["Lagoon"] = "Đầm phá", ["Ember"] = "Than hồng", ["Bubblegum"] = "Kẹo cao su", ["Slate Night"] = "Đêm xám xanh", ["Jungle"] = "Rừng nhiệt đới", ["Peach Cream"] = "Kem đào", ["Neon Tokyo"] = "Tokyo neon", ["Blood Moon"] = "Trăng máu", ["Desert Sand"] = "Cát sa mạc", ["Galaxy"] = "Thiên hà", ["Smoke"] = "Khói",
+		["Lavender Mist"] = "Sương oải hương", ["Teal Orange"] = "Xanh ngọc & cam", ["Olive Grove"] = "Rừng ô liu", ["Sky Day"] = "Bầu trời ban ngày", ["Wine"] = "Rượu vang", ["Copper Dusk"] = "Hoàng hôn đồng", ["Citrus"] = "Cam chanh", ["Graphite Blue"] = "Xám than xanh",
+		["Inverse"] = "Màu đảo ngược", ["Pastel"] = "Pastel nhạt", ["Deep"] = "Đậm sâu", ["Warm Shift"] = "Chuyển sang ấm", ["Cool Shift"] = "Chuyển sang lạnh", ["Glow"] = "Ánh sáng", ["Shadow"] = "Bóng tối",
+		["English"] = "English",
+		["Tiếng Việt"] = "Tiếng Việt",
+		["1 000 000.00"] = "1 000 000.00",
+		["Short (1.5M)"] = "Rút gọn (1.5M)",
+		["Myriad (100K = 10 Wan)"] = "Hệ vạn (100K = 10 vạn)",
+		["Auto (Theme)"] = "Tự động (theo chủ đề)",
+		["Collapse all"] = "Thu gọn tất cả",
+		["Expand all"] = "Mở rộng tất cả",
+		["Blue"] = "Xanh dương",
+		["Dark Blue"] = "Xanh dương đậm",
+		["Sky"] = "Xanh da trời",
+		["Cyan"] = "Xanh lơ",
+		["Teal"] = "Xanh mòng két",
+		["Green"] = "Xanh lá",
+		["Lime"] = "Xanh chanh",
+		["Yellow"] = "Vàng",
+		["Orange"] = "Cam",
+		["Red"] = "Đỏ",
+		["Pink"] = "Hồng",
+		["Purple"] = "Tím",
+		["Gray"] = "Xám",
+		["White"] = "Trắng",
+		["Navy"] = "Xanh navy",
+		["Azure"] = "Xanh thiên thanh",
+		["Turquoise"] = "Xanh ngọc lam",
+		["Aqua"] = "Xanh nước biển nhạt",
+		["Mint"] = "Xanh bạc hà",
+		["Emerald"] = "Xanh lục bảo",
+		["Forest"] = "Xanh rừng",
+		["Olive"] = "Xanh ô liu",
+		["Gold"] = "Vàng kim",
+		["Amber"] = "Hổ phách",
+		["Peach"] = "Hồng đào",
+		["Coral"] = "San hô",
+		["Crimson"] = "Đỏ thẫm",
+		["Maroon"] = "Đỏ nâu",
+		["Rose"] = "Hồng hoa hồng",
+		["Hot Pink"] = "Hồng đậm",
+		["Magenta"] = "Đỏ tươi (Magenta)",
+		["Violet"] = "Tím violet",
+		["Indigo"] = "Chàm",
+		["Lavender"] = "Tím oải hương",
+		["Brown"] = "Nâu",
+		["Silver"] = "Bạc",
+		["Slate"] = "Xám đá phiến",
+		["Neon Green"] = "Xanh lá neon",
+		["Neon Pink"] = "Hồng neon",
+		["Neon Blue"] = "Xanh dương neon",
+		["Cobalt"] = "Xanh cô-ban",
+		["Royal Blue"] = "Xanh hoàng gia",
+		["Ice"] = "Xanh băng",
+		["Ocean Blue"] = "Xanh đại dương",
+		["Cerulean"] = "Xanh thiên lam",
+		["Jade"] = "Xanh ngọc bích",
+		["Seafoam"] = "Xanh bọt biển",
+		["Chartreuse"] = "Xanh vàng",
+		["Lemon"] = "Vàng chanh",
+		["Sunflower"] = "Vàng hướng dương",
+		["Tangerine"] = "Cam quýt",
+		["Vermilion"] = "Đỏ son",
+		["Scarlet"] = "Đỏ tươi",
+		["Ruby"] = "Đỏ ruby",
+		["Burgundy"] = "Đỏ rượu vang",
+		["Fuchsia"] = "Hồng tím",
+		["Orchid"] = "Tím lan",
+		["Plum"] = "Tím mận",
+		["Amethyst"] = "Tím thạch anh",
+		["Lilac"] = "Tím tử đinh hương",
+		["Salmon"] = "Hồng cá hồi",
+		["Blush"] = "Hồng phấn",
+		["Sand"] = "Màu cát",
+		["Chocolate"] = "Nâu sô-cô-la",
+		["Bronze"] = "Đồng thiếc",
+		["Copper"] = "Đồng đỏ",
+		["Steel"] = "Xanh thép",
+		["Charcoal"] = "Xám than",
+		["Ivory"] = "Trắng ngà",
+		["Aurora"] = "Cực quang",
+		["Electric Purple"] = "Tím điện",
+		["Neon Yellow"] = "Vàng neon",
+		["Neon Orange"] = "Cam neon",
+		["Cotton Candy"] = "Kẹo bông",
+		["Custom"] = "Tùy chỉnh",
+		["Default"] = "Mặc định",
+		["Dracula"] = "Dracula",
+		["Nord"] = "Nord",
+		["Monokai"] = "Monokai",
+		["Midnight"] = "Nửa đêm",
+		["Sunset"] = "Hoàng hôn",
+		["Ocean"] = "Đại dương",
+		["Deep Forest"] = "Rừng sâu",
+		["Sakura"] = "Hoa anh đào",
+		["Cyberpunk"] = "Cyberpunk",
+		["Lava"] = "Dung nham",
+		["Coffee"] = "Cà phê",
+		["Mono"] = "Đơn sắc",
+		["Gold Black"] = "Vàng đen",
+		["Mint Ice"] = "Bạc hà băng",
+		["Royal Purple"] = "Tím hoàng gia",
+		["Rose Gold"] = "Vàng hồng",
+		["Ice Blue"] = "Xanh băng giá",
+		["Toxic"] = "Độc tố",
+		["Crimson Night"] = "Đêm đỏ thẫm",
+		["Arctic"] = "Bắc cực",
+		["Autumn"] = "Mùa thu",
+		["Candy"] = "Kẹo ngọt",
+		["Matrix"] = "Matrix",
+		["Steel Blue"] = "Xanh thép đậm",
+		["Sunrise"] = "Bình minh",
+		["Violet Storm"] = "Bão tím",
+		["Emerald Night"] = "Đêm lục bảo",
+	}
+	for k, v in add do if D[k] == nil then D[k] = v end end
+	local fix = {
+		["Visual"] = "Hình ảnh",
+		["Effect"] = "Hiệu ứng",
+		["Farm"] = "Cày cá",
+		["Stats"] = "Thống kê",
+		["Misc"] = "Khác",
+		["Stay In Place (Face Sea)"] = "Đứng yên (quay mặt ra biển)",
+	}
+	for k, v in fix do D[k] = v end
+	local G = L.Glos.VI
+	local gadd = {
+		{"Auto Buy Skill Market Failed", "Tự động mua kỹ năng thất bại"},
+		{"Already Owned", "Đã sở hữu rồi"},
+		{"Island Locked", "Đảo chưa mở khóa"},
+		{"No Rod Selected", "Chưa chọn cần câu"},
+		{"No Island Selected", "Chưa chọn đảo"},
+		{"No NPC Selected", "Chưa chọn NPC"},
+		{"No Character", "Không có nhân vật"},
+		{"No Response", "Không có phản hồi"},
+		{"No Chest", "Không có rương"},
+		{"No Price", "Không có giá"},
+		{"No Quote", "Không có báo giá"},
+		{"NPC Not Found", "Không tìm thấy NPC"},
+		{"Move Failed", "Di chuyển thất bại"},
+		{"Remove Refused", "Bị từ chối xóa"},
+		{"No Rod Merchant", "Không có thương nhân cần câu"},
+		{"Return Failed", "Quay lại thất bại"},
+		{"Equip Timeout", "Hết thời gian trang bị"},
+		{"Catalog Error", "Lỗi danh mục"},
+		{"Regions Missing", "Thiếu khu vực"},
+		{"Loop Error", "Lỗi vòng lặp"},
+		{"Bad Config", "Cấu hình sai"},
+		{"Not Hooked", "Chưa cắn câu"},
+		{"Gem", "Gem"},
+		{"Preset", "Mẫu"},
+		{"is empty", "đang trống"},
+		{"saved", "đã lưu"},
+		{"loaded", "đã tải"},
+		{"cleared", "đã xóa"},
+	}
+	for i = #gadd, 1, -1 do table.insert(G, 1, gadd[i]) end
+	local ie, iv = {
+		["Clear All Pins"] = "Removes every pinned feature from the Favorites tab.",
+		["Clear Slot"] = "Empties the selected preset slot.",
+		["Collapse All Sections"] = "Collapses every section in the current tab.",
+		["Expand All Sections"] = "Expands every section in the current tab.",
+		["Damage / DPS Panel Opacity (%)"] = "Makes the Damage / DPS panel more see-through. 100 is fully solid.",
+		["Mini UI Opacity (%)"] = "Makes the Mini UI more see-through. 100 is fully solid.",
+		["Feature To Pin"] = "Pick a feature to add to the Favorites tab.",
+		["Pin Selected"] = "Adds the picked feature to the Favorites tab.",
+		["Unpin Selected"] = "Removes the picked feature from the Favorites tab.",
+		["Intro Animation"] = "Plays or skips the start-up animation when the script loads.",
+		["Open / Close Animation"] = "Chooses the animation used when the menu opens and closes.",
+		["Section Animation"] = "Turns the collapse / expand animation of sections on or off.",
+		["Section Arrow Style"] = "Chooses the look of the arrow button on each section header.",
+		["Section Header Size"] = "Changes the height of section header bars.",
+		["Notifications"] = "Normal shows notifications, Short shortens them, Off hides everything except errors.",
+		["UI Toggle Key"] = "The keyboard key that shows or hides the menu.",
+		["Reset Risk Warnings"] = "Shows the risk warning popups again for risky features.",
+		["Mini: Active Features"] = "Shows how many features are currently on in the Mini UI.",
+		["Preset Slot"] = "Choose which preset slot Save / Load / Clear applies to.",
+		["Save To Slot"] = "Saves your current settings into the selected preset slot.",
+		["Load Slot"] = "Loads the settings stored in the selected preset slot.",
+	}, {
+		["Clear All Pins"] = "Gỡ toàn bộ chức năng đã ghim khỏi tab Yêu thích.",
+		["Clear Slot"] = "Xóa trống ô cấu hình đã chọn.",
+		["Collapse All Sections"] = "Thu gọn tất cả các mục trong tab hiện tại.",
+		["Expand All Sections"] = "Mở rộng tất cả các mục trong tab hiện tại.",
+		["Damage / DPS Panel Opacity (%)"] = "Làm bảng Sát thương / DPS trong suốt hơn. 100 là hoàn toàn đặc.",
+		["Mini UI Opacity (%)"] = "Làm giao diện mini trong suốt hơn. 100 là hoàn toàn đặc.",
+		["Feature To Pin"] = "Chọn chức năng để thêm vào tab Yêu thích.",
+		["Pin Selected"] = "Thêm chức năng đã chọn vào tab Yêu thích.",
+		["Unpin Selected"] = "Bỏ chức năng đã chọn khỏi tab Yêu thích.",
+		["Intro Animation"] = "Bật hoặc bỏ qua hiệu ứng khởi động khi script tải.",
+		["Open / Close Animation"] = "Chọn hiệu ứng khi mở và đóng menu.",
+		["Section Animation"] = "Bật hoặc tắt hiệu ứng thu gọn / mở rộng của các mục.",
+		["Section Arrow Style"] = "Chọn kiểu nút mũi tên trên thanh tiêu đề mỗi mục.",
+		["Section Header Size"] = "Thay đổi độ cao của thanh tiêu đề mục.",
+		["Notifications"] = "Bình thường: hiện thông báo; Ngắn: rút ngắn thời gian hiện; Tắt: ẩn tất cả trừ thông báo lỗi.",
+		["UI Toggle Key"] = "Phím trên bàn phím dùng để ẩn / hiện menu.",
+		["Reset Risk Warnings"] = "Hiện lại các hộp cảnh báo rủi ro cho những chức năng nguy hiểm.",
+		["Mini: Active Features"] = "Hiện số chức năng đang bật trong giao diện mini.",
+		["Preset Slot"] = "Chọn ô cấu hình mà Lưu / Tải / Xóa sẽ áp dụng.",
+		["Save To Slot"] = "Lưu cài đặt hiện tại vào ô cấu hình đã chọn.",
+		["Load Slot"] = "Tải cài đặt đã lưu trong ô cấu hình đã chọn.",
+	}
+	for k, v in ie do if L.Info.EN[k] == nil then L.Info.EN[k] = v end end
+	for k, v in iv do if L.Info.VI[k] == nil then L.Info.VI[k] = v end end
+end
 
 L.Lang = ge.__HowLang or "EN"
 local reg = setmetatable({}, {__mode = "k"})
@@ -2497,12 +2799,12 @@ function L:Gate(o)
 	fit(sg, f, sc, 300, 180)
 	local cn = sg:GetPropertyChangedSignal("AbsoluteSize"):Connect(function() fit(sg, f, sc, 300, 180) end)
 	tl({Text = tostring(o.Title or "Avenoric"), Font = fb, TextSize = 16, Size = UDim2.new(1, 0, 0, 20), Parent = f})
-	tl({Text = "Enter your key to continue", TextSize = 13, TextColor3 = c.dm, Position = UDim2.fromOffset(0, 22), Size = UDim2.new(1, 0, 0, 16), Parent = f})
+	tl({Text = tr("Enter your key to continue"), TextSize = 13, TextColor3 = c.dm, Position = UDim2.fromOffset(0, 22), Size = UDim2.new(1, 0, 0, 16), Parent = f})
 	local bx = mk("Frame", {Position = UDim2.fromOffset(0, 48), Size = UDim2.new(1, 0, 0, 34), BackgroundColor3 = c.cd, BorderSizePixel = 0, ClipsDescendants = true, Parent = f}, {rc(6), sk(0.9)})
 	local st = bx:FindFirstChildOfClass("UIStroke")
-	local tb = mk("TextBox", {BackgroundTransparency = 1, Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -24, 1, 0), Font = fn, TextSize = 14, TextColor3 = c.tx, PlaceholderText = "Key", PlaceholderColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, Text = "", Parent = bx})
+	local tb = mk("TextBox", {BackgroundTransparency = 1, Position = UDim2.fromOffset(12, 0), Size = UDim2.new(1, -24, 1, 0), Font = fn, TextSize = 14, TextColor3 = c.tx, PlaceholderText = tr("Key"), PlaceholderColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, Text = "", Parent = bx})
 	local ml = tl({Text = "", TextSize = 12, TextColor3 = c.er, Position = UDim2.fromOffset(0, 86), Size = UDim2.new(1, 0, 0, 16), Visible = false, TextTruncate = Enum.TextTruncate.AtEnd, Parent = f})
-	local sb = bt({AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, 0, 1, 0), Size = o.Link and UDim2.new(0.5, -4, 0, 32) or UDim2.new(1, 0, 0, 32), BackgroundColor3 = c.ac, BackgroundTransparency = 0, Font = fb, TextSize = 13, TextColor3 = c.bg, Text = "Submit", Parent = f}, {rc(6)})
+	local sb = bt({AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, 0, 1, 0), Size = o.Link and UDim2.new(0.5, -4, 0, 32) or UDim2.new(1, 0, 0, 32), BackgroundColor3 = c.ac, BackgroundTransparency = 0, Font = fb, TextSize = 13, TextColor3 = c.bg, Text = tr("Submit"), Parent = f}, {rc(6)})
 	tb:GetPropertyChangedSignal("Text"):Connect(function() if #tb.Text > mx then tb.Text = tb.Text:sub(1, mx) end end)
 	local busy, got = false, nil
 	local function msg(s, col) ml.Text, ml.TextColor3, ml.Visible = s, col or c.er, true end
@@ -2526,7 +2828,7 @@ function L:Gate(o)
 	end)
 	sb.Activated:Connect(sub)
 	if o.Link then
-		local gk = bt({AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(0.5, -4, 0, 32), BackgroundColor3 = c.cd, BackgroundTransparency = 0, Font = fn, TextSize = 13, TextColor3 = c.tx, Text = "Get Key", Parent = f}, {rc(6), sk(0.9)})
+		local gk = bt({AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(0.5, -4, 0, 32), BackgroundColor3 = c.cd, BackgroundTransparency = 0, Font = fn, TextSize = 13, TextColor3 = c.tx, Text = tr("Get Key"), Parent = f}, {rc(6), sk(0.9)})
 		hov(gk, function() return c.cd end)
 		gk.Activated:Connect(function()
 			if setclipboard then setclipboard(tostring(o.Link)) end
@@ -2578,8 +2880,8 @@ function L:Window(o)
 		local f = mk("Frame", {Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = c.cd, BorderSizePixel = 0, ZIndex = 100, Parent = tsf}, {rc(8), sk(0.9), pd(18, 14, 10, 10)})
 		mk("Frame", {Position = UDim2.fromOffset(-12, 2), Size = UDim2.new(0, 3, 1, -4), BackgroundColor3 = n.Error and c.er or c.ac, BorderSizePixel = 0, ZIndex = 101, Parent = f}, {rc(2)})
 		local lay = mk("Frame", {Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, ZIndex = 101, Parent = f}, {ll(2)})
-		tl({Text = tostring(n.Title or "Avenoric"), Font = fb, Size = UDim2.new(1, 0, 0, 18), TextTruncate = Enum.TextTruncate.AtEnd, ZIndex = 102, LayoutOrder = 1, Parent = lay})
-		if n.Text ~= nil then tl({Text = tostring(n.Text), TextSize = n.Strong and 14 or 13, Font = n.Strong and fb or fn, TextColor3 = n.Strong and c.tx or c.dm, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, TextWrapped = true, ZIndex = 102, LayoutOrder = 2, Parent = lay}) end
+		tl({Text = tr(tostring(n.Title or "Avenoric")), Font = fb, Size = UDim2.new(1, 0, 0, 18), TextTruncate = Enum.TextTruncate.AtEnd, ZIndex = 102, LayoutOrder = 1, Parent = lay})
+		if n.Text ~= nil then tl({Text = n.TextRaw and tostring(n.Text) or tr(tostring(n.Text)), TextSize = n.Strong and 14 or 13, Font = n.Strong and fb or fn, TextColor3 = n.Strong and c.tx or c.dm, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, TextWrapped = true, ZIndex = 102, LayoutOrder = 2, Parent = lay}) end
 		local us = mk("UIScale", {Scale = 0.9, Parent = f})
 		tw(us, {Scale = 1})
 		f.InputBegan:Connect(function(i)
@@ -2670,15 +2972,21 @@ function L:Window(o)
 			if not dead then W:SetStore("scr", W.scr) end
 		end)
 	end
-	local function counted(e)
-		return e.Kind == "Toggle" and e.v == true and not tostring(e.Name):find("^Show ") and not tostring(e.Name):find("^Mini:") and e.Name ~= "Stay In Place (Face Sea)"
+	-- Setting tab holds a few real features (counted) among cosmetic toggles (not counted)
+	local settingFeat = {["Instant Teleport"] = true, ["Safe"] = true, ["Hidden Fishing"] = true, ["FPS Booster"] = true, ["Anti-Lag (No Graphics Reduction)"] = true, ["Auto Execute On Rejoin"] = true, ["Anti-AFK"] = true}
+	local function counted(e, T)
+		if e.Kind ~= "Toggle" or e.v ~= true then return false end
+		local nm = tostring(e.Name)
+		if nm:find("^Show ") or nm:find("^Mini:") or nm == "Stay In Place (Face Sea)" or nm == "Apply Overhead Name" then return false end
+		if T and T.Name == "Setting" then return settingFeat[nm] == true end
+		return true
 	end
 	function W:ActiveNames()
 		local t = {}
 		for _, T in W.Tabs do
-			if T.Name ~= "Setting" and T.Name ~= "Favorites" then
+			if T.Name ~= "Favorites" then
 				for _, e in T.Rows do
-					if counted(e) then table.insert(t, T.Name .. ": " .. tostring(e.Name)) end
+					if counted(e, T) then table.insert(t, tr(T.Name) .. ": " .. tr(tostring(e.Name))) end
 				end
 			end
 		end
@@ -2687,9 +2995,9 @@ function L:Window(o)
 	function W:CountActive()
 		local n = 0
 		for _, T in W.Tabs do
-			if T.Name ~= "Setting" and T.Name ~= "Favorites" then
+			if T.Name ~= "Favorites" then
 				for _, e in T.Rows do
-					if counted(e) then n = n + 1 end
+					if counted(e, T) then n = n + 1 end
 				end
 			end
 		end
@@ -2767,7 +3075,7 @@ function L:Window(o)
 	local sbx = mk("Frame", {Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = c.cd, BorderSizePixel = 0, ClipsDescendants = true, Parent = nv}, {rc(6), sk(0.9)})
 	local sst = sbx:FindFirstChildOfClass("UIStroke")
 	ig({Text = "magnifying-glass", TextSize = 14, TextColor3 = c.dm, Position = UDim2.fromOffset(9, 0), Size = UDim2.fromOffset(16, 32), Parent = sbx})
-	local sb = mk("TextBox", {BackgroundTransparency = 1, Position = UDim2.fromOffset(30, 0), Size = UDim2.new(1, -62, 1, 0), Font = fn, TextSize = 13, TextColor3 = c.tx, PlaceholderText = "Search", PlaceholderColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, Text = "", Parent = sbx})
+	local sb = mk("TextBox", {BackgroundTransparency = 1, Position = UDim2.fromOffset(30, 0), Size = UDim2.new(1, -62, 1, 0), Font = fn, TextSize = 13, TextColor3 = c.tx, PlaceholderText = tr("Search"), PlaceholderColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, Text = "", Parent = sbx})
 
 	local sbc = bt({AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -4, 0.5, 0), Size = UDim2.fromOffset(24, 24), Visible = false, Parent = sbx})
 	ig({Text = "x", TextSize = 12, TextColor3 = c.dm, Size = UDim2.fromScale(1, 1), TextXAlignment = Enum.TextXAlignment.Center, Active = false, Parent = sbc})
@@ -3050,7 +3358,7 @@ function L:Window(o)
 						local pack = L.Info[L.Lang]
 						local txt = pack and pack[r.Name] or inf
 						if W.infoToast and W.infoToast.Parent then W.infoToast:Destroy() end
-						W.infoToast = W:Notify({Title = tr(r.Name), Text = txt, Time = 8, Strong = true})
+						W.infoToast = W:Notify({Title = r.Name, Text = txt, TextRaw = true, Time = 8, Strong = true})
 					end)
 				end
 			end
@@ -3258,6 +3566,7 @@ function L:Window(o)
 				e.v = v
 				draw(true)
 				put(e, v)
+				if W.onToggle then pcall(W.onToggle) end
 				if e.SecObj and e.SecObj.upd then e.SecObj.upd() end
 				if e.fav then e.fav() end
 				run(r.Callback, v)
@@ -3483,7 +3792,7 @@ function L:Window(o)
 			local e, f = row("TextBox", r)
 			local bx = mk("Frame", {AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0), Size = UDim2.fromOffset(150, 28), BackgroundColor3 = c.bg, BorderSizePixel = 0, ClipsDescendants = true, Parent = f}, {rc(4), sk(0.9)})
 			local st = bx:FindFirstChildOfClass("UIStroke")
-			local x = mk("TextBox", {BackgroundTransparency = 1, Position = UDim2.fromOffset(8, 0), Size = UDim2.new(1, -16, 1, 0), Font = fn, TextSize = 13, TextColor3 = c.tx, PlaceholderText = tostring(r.Placeholder or ""), PlaceholderColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, Text = type(r.Default) == "string" and r.Default or "", Parent = bx})
+			local x = mk("TextBox", {BackgroundTransparency = 1, Position = UDim2.fromOffset(8, 0), Size = UDim2.new(1, -16, 1, 0), Font = fn, TextSize = 13, TextColor3 = c.tx, PlaceholderText = tr(tostring(r.Placeholder or "")), PlaceholderColor3 = c.dm, TextXAlignment = Enum.TextXAlignment.Left, ClearTextOnFocus = false, Text = type(r.Default) == "string" and r.Default or "", Parent = bx})
 			e.v, e.ld = x.Text, tostring
 			function e:Set(v)
 				v = tostring(v)
@@ -3574,7 +3883,7 @@ function L:Window(o)
 		if on and not at then table.insert(pins, k) elseif not on and at then table.remove(pins, at) else return end
 		W:SetStore("pins", pins)
 		W.fav.rebuild()
-		if not quiet then W:Notify({Title = tr(on and "Pinned" or "Unpinned"), Text = e.Name, Time = 2}) end
+		if not quiet then W:Notify({Title = on and "Pinned" or "Unpinned", Text = e.Name, Time = 2}) end
 	end
 	function W:TogglePin(e) W:SetPin(e, nil) end
 	function W:EnableFavorites()
@@ -4672,7 +4981,7 @@ ft = gt:Toggle({Name = "Auto Fish", Flag = "af", Callback = function(v)
 end})
 gt:Toggle({Name = "Auto Boss", Flag = "ab"})
 gt:Toggle({Name = "Stay In Place (Face Sea)", Default = true, Flag = "stay", Callback = function(v) getgenv().__HowStay = v == true end})
-gt:Toggle({Name = "Face Camera Direction", Flag = "fcam", Callback = function(v) getgenv().__HowFaceCam = v == true end})
+gt:Toggle({Name = "Face Camera Direction", Flag = "fcam", Callback = function(v) getgenv().__HowFcG = v == true getgenv().__HowFaceCam = getgenv().__HowFcG == true or getgenv().__HowFcP == true end})
 ge.__HowBagLabel = gt:Label({Text = "Fish In Bag: --"})
 ge.__HowFarmLabel = gt:Label({Text = "Time / Money: --"})
 gt:Toggle({Name = "Show Fishing Time", Default = true, Flag = "sft"})
@@ -5711,6 +6020,7 @@ do local __howf = function()
 		ge.__HowX.dead = true
 		for _, cn in ge.__HowX.cs do pcall(function() cn:Disconnect() end) end
 		pcall(function() ge.__HowX.hud:Destroy() end)
+		pcall(function() ge.__HowX.music:Destroy() end)
 	end
 	local X = {cs = {}, dead = false}
 	ge.__HowX = X
@@ -6187,9 +6497,18 @@ do local __howf = function()
 			end)
 			end)
 			if not okLoop and not X.warned then X.warned = true; warn("[HowHub] mini UI update error: " .. tostring(errLoop)) end
-			task.wait(0.25)
+			task.wait(0.15)
 		end
 	end)
+	-- refresh the "Active" line instantly when any toggle changes (no waiting for the loop)
+	gw.onToggle = function()
+		for i, ln in lines do
+			if ln.flag == "mac" and Flags.mac ~= false and labels[i] then
+				local ok, txt = pcall(ln.get)
+				if ok then labels[i].Text = L.Tr(txt) end
+			end
+		end
+	end
 
 	-- ---------------------------------------------------------------- theme
 	local function key(c3) return math.floor(c3.R * 255 + 0.5) * 65536 + math.floor(c3.G * 255 + 0.5) * 256 + math.floor(c3.B * 255 + 0.5) end
@@ -6318,6 +6637,26 @@ do local __howf = function()
 		{"Sunrise", {36, 31, 23}, {51, 45, 32}, {69, 60, 44}, {87, 76, 55}, {255, 190, 70}},
 		{"Violet Storm", {27, 25, 36}, {39, 35, 51}, {52, 48, 69}, {66, 60, 87}, {120, 90, 230}},
 		{"Emerald Night", {21, 36, 30}, {30, 51, 43}, {41, 69, 57}, {52, 87, 72}, {40, 210, 140}},
+		{"Twilight", {24, 22, 40}, {34, 31, 58}, {47, 43, 80}, {62, 57, 104}, {200, 140, 255}},
+		{"Lagoon", {12, 32, 36}, {18, 46, 52}, {26, 64, 72}, {36, 86, 96}, {0, 230, 200}},
+		{"Ember", {32, 16, 10}, {48, 24, 16}, {68, 34, 22}, {92, 46, 30}, {255, 150, 50}},
+		{"Bubblegum", {36, 26, 40}, {52, 38, 58}, {70, 52, 78}, {90, 68, 100}, {255, 130, 230}},
+		{"Slate Night", {20, 24, 30}, {30, 36, 45}, {42, 50, 62}, {56, 66, 82}, {120, 170, 230}},
+		{"Jungle", {14, 26, 14}, {20, 38, 20}, {28, 54, 28}, {38, 72, 38}, {140, 230, 80}},
+		{"Peach Cream", {38, 30, 26}, {54, 44, 38}, {72, 60, 52}, {92, 78, 68}, {255, 190, 150}},
+		{"Neon Tokyo", {14, 10, 26}, {22, 16, 42}, {34, 24, 62}, {48, 34, 86}, {0, 255, 240}},
+		{"Blood Moon", {26, 10, 14}, {40, 14, 20}, {58, 20, 28}, {80, 28, 38}, {255, 60, 90}},
+		{"Desert Sand", {36, 32, 24}, {52, 46, 34}, {70, 62, 46}, {90, 80, 60}, {235, 200, 120}},
+		{"Galaxy", {12, 10, 30}, {20, 16, 50}, {30, 24, 72}, {42, 34, 98}, {180, 120, 255}},
+		{"Smoke", {24, 24, 26}, {36, 36, 40}, {50, 50, 56}, {66, 66, 74}, {170, 180, 200}},
+		{"Lavender Mist", {30, 28, 40}, {43, 40, 57}, {58, 54, 76}, {75, 70, 98}, {200, 180, 255}},
+		{"Teal Orange", {14, 30, 36}, {20, 42, 50}, {28, 58, 68}, {38, 78, 90}, {255, 140, 66}},
+		{"Olive Grove", {26, 28, 18}, {38, 41, 26}, {52, 56, 36}, {68, 73, 48}, {190, 210, 100}},
+		{"Sky Day", {24, 34, 48}, {34, 48, 66}, {46, 64, 88}, {60, 82, 112}, {110, 200, 255}},
+		{"Wine", {32, 14, 24}, {48, 22, 36}, {66, 30, 50}, {88, 40, 66}, {220, 90, 150}},
+		{"Copper Dusk", {30, 22, 20}, {44, 32, 28}, {60, 44, 38}, {80, 60, 50}, {205, 127, 50}},
+		{"Citrus", {28, 30, 16}, {40, 44, 22}, {56, 62, 30}, {74, 82, 40}, {255, 230, 50}},
+		{"Graphite Blue", {22, 24, 28}, {32, 35, 42}, {44, 48, 58}, {58, 64, 78}, {80, 140, 255}},
 	}
 	local PAL_AUTO = "Auto (Theme)"
 	local palOpts, schemeMap = {PAL_AUTO}, {}
@@ -6347,7 +6686,7 @@ do local __howf = function()
 	end
 
 	-- Blend: second colour (harmony of the accent, a preset, or custom RGB)
-	local harmony = {"Complementary", "Analogous", "Analogous Left", "Analogous Wide", "Triadic", "Triadic Left", "Split-Complementary", "Split Left", "Tetradic", "Square", "Neon Complement", "Lighter", "Darker", "Muted", "Vivid"}
+	local harmony = {"Complementary", "Analogous", "Analogous Left", "Analogous Wide", "Triadic", "Triadic Left", "Split-Complementary", "Split Left", "Tetradic", "Square", "Neon Complement", "Lighter", "Darker", "Muted", "Vivid", "Inverse", "Pastel", "Deep", "Warm Shift", "Cool Shift", "Glow", "Shadow"}
 	local blendOpts = {}
 	for _, n in harmony do table.insert(blendOpts, n) end
 	for _, p in presets do table.insert(blendOpts, p[1]) end
@@ -6370,6 +6709,13 @@ do local __howf = function()
 		elseif v == "Darker" then return Color3.fromHSV(h, s, vv * 0.45)
 		elseif v == "Muted" then return Color3.fromHSV(h, s * 0.35, vv * 0.85)
 		elseif v == "Vivid" then return Color3.fromHSV(h, 1, 1)
+		elseif v == "Inverse" then return Color3.new(1 - a.R, 1 - a.G, 1 - a.B)
+		elseif v == "Pastel" then return Color3.fromHSV(h, math.clamp(s * 0.3, 0, 1), 1)
+		elseif v == "Deep" then return Color3.fromHSV(h, math.clamp(s * 1.1, 0, 1), vv * 0.65)
+		elseif v == "Warm Shift" then return Color3.fromHSV((h - 0.08) % 1, math.clamp(s, 0.5, 1), math.clamp(vv, 0.7, 1))
+		elseif v == "Cool Shift" then return Color3.fromHSV((h + 0.08) % 1, math.clamp(s, 0.5, 1), math.clamp(vv, 0.7, 1))
+		elseif v == "Glow" then return a:Lerp(Color3.new(1, 1, 1), 0.65)
+		elseif v == "Shadow" then return a:Lerp(Color3.new(0, 0, 0), 0.7)
 		elseif v == "Custom" then
 			return Color3.fromRGB(
 				math.clamp(tonumber(Flags.br) or 255, 0, 255),
@@ -6761,7 +7107,7 @@ do local __howf = function()
 	ts:Button({Name = "Reset Mini UI Position", Callback = function() fr.Position = UDim2.new(0, 12, 0, 80) end})
 	ts:Button({Name = "List Active Features", Callback = function()
 		local t = gw:ActiveNames()
-		gw:Notify({Title = "Active: " .. #t, Text = #t > 0 and table.concat(t, "\n") or "None", Time = 10})
+		gw:Notify({Title = "Active: " .. #t, Text = #t > 0 and table.concat(t, "\n") or "None", TextRaw = #t > 0, Time = 10})
 	end})
 	ts:Button({Name = "Reset Time / Fish / Money", Callback = resetStats})
 
@@ -6928,6 +7274,7 @@ do local __howf = function()
 	tp:Section({Name = "Movement"})
 	tp:Toggle({Name = "Infinite Jump", Confirm = "This feature changes your character's movement and can be detected by the game. Enable anyway?", Flag = "pij"})
 	tp:Toggle({Name = "Noclip", Confirm = "This feature changes your character's movement and can be detected by the game. Enable anyway?", Flag = "pnc"})
+	tp:Toggle({Name = "Face Camera Direction", Flag = "pfc", Callback = function(v) getgenv().__HowFcP = v == true getgenv().__HowFaceCam = getgenv().__HowFcG == true or getgenv().__HowFcP == true end})
 	track(UIS.JumpRequest:Connect(function()
 		if Flags.pij ~= true then return end
 		local _, _, h = lc()
@@ -6980,6 +7327,167 @@ do local __howf = function()
 			end)
 			task.wait(1)
 		end
+	end)
+
+	-- ------------------------------------------------------------ music
+	tp:Section({Name = "Music"})
+	tp:TextBox({Name = "Music ID", Default = "", Placeholder = "Sound ID", Flag = "mid"})
+	local function getMusic()
+		local snd = X.music
+		if not snd or not snd.Parent then
+			snd = Instance.new("Sound")
+			snd.Name = "HowMusic"
+			snd.Parent = game:GetService("SoundService")
+			X.music = snd
+		end
+		snd.Volume = math.clamp((tonumber(Flags.mvol) or 50) / 100, 0, 1)
+		snd.Looped = Flags.mloop ~= false
+		return snd
+	end
+	local function playId(id)
+		id = tostring(id or ""):match("%d+")
+		if not id then
+			gw:Notify({Title = "Music", Text = "Enter a valid Sound ID first."})
+			return
+		end
+		local snd = getMusic()
+		snd:Stop()
+		snd.SoundId = "rbxassetid://" .. id
+		snd.TimePosition = 0
+		snd:Play()
+		task.delay(4, function()
+			if X.music == snd and snd.Parent and not snd.IsPlaying and not snd.IsLoaded then
+				gw:Notify({Title = "Music", Text = "This Sound ID could not be loaded. Try another one."})
+			end
+		end)
+	end
+	tp:Button({Name = "Play Music", Callback = function() playId(Flags.mid) end})
+	tp:Button({Name = "Pause / Resume Music", Callback = function()
+		local snd = X.music
+		if not snd or not snd.Parent then return end
+		if snd.IsPlaying then snd:Pause() else snd:Resume() end
+	end})
+	tp:Button({Name = "Stop Music", Callback = function()
+		local snd = X.music
+		if snd and snd.Parent then snd:Stop() end
+	end})
+	tp:Slider({Name = "Music Volume", Min = 0, Max = 100, Step = 1, Default = 50, Flag = "mvol", Callback = function(v)
+		local snd = X.music
+		if snd and snd.Parent then snd.Volume = math.clamp((tonumber(v) or 50) / 100, 0, 1) end
+	end})
+	tp:Toggle({Name = "Loop Music", Default = true, Flag = "mloop", Callback = function(v)
+		local snd = X.music
+		if snd and snd.Parent then snd.Looped = v == true end
+	end})
+
+	tp:Section({Name = "Music Playlist"})
+	local HttpS = game:GetService("HttpService")
+	local PL_FILE = "HowHub_Playlist.json"
+	-- Starter songs. IDs come from a Google AI answer, NOT tested; names may be wrong and Roblox may block some.
+	-- Names with " / " mean the same ID was given two different names. Add or remove songs with the buttons below.
+	local SEED = {
+		{n = "Tinh Vệ (Phổ biến)", id = "124384558101360"},
+		{n = "Tinh Vệ (Lời Việt Acapella / Mashup)", id = "139747933972576"},
+		{n = "Tinh Vệ DJ / Vinahouse (x IFLY x 9277)", id = "124044109756641"},
+		{n = "Tinh Vệ (Bass tăng cường)", id = "134140709844049"},
+		{n = "Lữ Khách Qua Thời Gian / BoyBoyBee", id = "131309848078328"},
+		{n = "Thời Không Sai Lệch / Lạc Lệ", id = "77063870786604"},
+		{n = "Đáp Án Của Thời Gian / Mạc Vấn Quy Kỳ", id = "132049153370517"},
+		{n = "Yến Vô Hiệt / Ảo Ảnh Ngày Thường", id = "82944401312241"},
+		{n = "Dũng Khí / Ỷ Lại", id = "112834898401032"},
+		{n = "Vây Giữ / Cuộn Thuốc Lá", id = "135497078214244"},
+		{n = "Mang Chủng / Đồng Thoại", id = "138035967202065"},
+		{n = "Phi Điểu Và Ve Sầu / Nước Mắt Nhân Ngư", id = "121931252233493"},
+		{n = "Thần Thoại / Chinese Remix Bass", id = "95796504549340"},
+		{n = "2 Phút Hơn (Pháo Remix)", id = "124166975687737"},
+		{n = "2 Phút Hơn (Pháo Remix) ID 2", id = "78534559289195"},
+		{n = "Cứ Thế Mong Chờ (Remix)", id = "73423580532746"},
+		{n = "Ngày Em Đẹp Nhất", id = "88813570339536"},
+		{n = "Cùng Anh (Remix Thần Thánh)", id = "71716020610625"},
+		{n = "Trái Đất Yêu Mặt Trời & Nắng Có Mang Em Đi", id = "140553267266985"},
+		{n = "Cố Giang Tình (Remix Vinahouse)", id = "103038059531764"},
+		{n = "Anh Là Cmn Địch (Remix Hot)", id = "110404768256690"},
+		{n = "Chữ Nghĩa Chữ Tiền (Remix)", id = "100551543792666"},
+		{n = "Quốc Ca Việt Nam", id = "1845922899"},
+	}
+	local playlist = {}
+	for _, v in SEED do table.insert(playlist, {n = v.n, id = v.id}) end
+	pcall(function()
+		if isfile and isfile(PL_FILE) then
+			local d = HttpS:JSONDecode(readfile(PL_FILE))
+			local src, isNew = nil, false
+			if type(d) == "table" and type(d.songs) == "table" then src, isNew = d.songs, true
+			elseif type(d) == "table" then src = d end
+			if src then
+				local l, have = {}, {}
+				for _, v in src do
+					if type(v) == "table" and type(v.n) == "string" and type(v.id) == "string" then
+						table.insert(l, {n = v.n, id = v.id})
+						have[v.id] = true
+					end
+				end
+				if not isNew then
+					-- old file (before the starter list): keep the user's songs, then add the starter songs
+					for _, v in SEED do
+						if not have[v.id] then table.insert(l, {n = v.n, id = v.id}) end
+					end
+				end
+				if #l > 0 or isNew then playlist = l end
+			end
+		end
+	end)
+	local function savePl()
+		pcall(function() if writefile then writefile(PL_FILE, HttpS:JSONEncode({ver = 2, songs = playlist})) end end)
+	end
+	local function plNames()
+		local t = {}
+		for _, v in playlist do table.insert(t, v.n) end
+		return t
+	end
+	local function findSong(n)
+		for i, v in playlist do
+			if v.n == n then return i, v end
+		end
+	end
+	local plDD = tp:Dropdown({Name = "Music Playlist", Options = plNames(), Default = playlist[1] and playlist[1].n, Flag = "mpl"})
+	tp:Button({Name = "Play Selected Song", Callback = function()
+		local _, v = findSong(plDD:Get())
+		if v then playId(v.id) end
+	end})
+	tp:Button({Name = "Next Song", Callback = function()
+		if #playlist == 0 then return end
+		local i = findSong(plDD:Get()) or 0
+		local v = playlist[i % #playlist + 1]
+		pcall(function() plDD:Set(v.n) end)
+		playId(v.id)
+	end})
+	tp:TextBox({Name = "Song Name", Default = "", Placeholder = "Song Name", Flag = "mnm"})
+	tp:Button({Name = "Add To Playlist", Callback = function()
+		local id = tostring(Flags.mid or ""):match("%d+")
+		if not id then
+			gw:Notify({Title = "Music", Text = "Enter a valid Sound ID first."})
+			return
+		end
+		local nm = tostring(Flags.mnm or ""):gsub("^%s+", ""):gsub("%s+$", "")
+		if nm == "" then nm = "ID " .. id end
+		local i = findSong(nm)
+		if i then playlist[i].id = id else table.insert(playlist, {n = nm, id = id}) end
+		savePl()
+		plDD:Refresh(plNames())
+		pcall(function() plDD:Set(nm) end)
+		gw:Notify({Title = "Music", Text = "Song added to the playlist."})
+	end})
+	tp:Button({Name = "Remove Selected Song", Callback = function()
+		local i = findSong(plDD:Get())
+		if not i then return end
+		table.remove(playlist, i)
+		savePl()
+		plDD:Refresh(plNames())
+		gw:Notify({Title = "Music", Text = "Song removed from the playlist."})
+	end})
+	task.spawn(function()
+		while alive() do task.wait(1) end
+		pcall(function() if X.music then X.music:Destroy() end end)
 	end)
 
 	-- ------------------------------------------------------------ tab icons
