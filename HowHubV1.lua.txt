@@ -5631,6 +5631,13 @@ do local __howf = function()
 	conn("FishCatchResult", function(ok)
 		if ok then
 			S.fish += 1
+			-- killing blow: the last hit often arrives without an HP update, so count the HP that was left
+			if lastHp and lastHp > 0 then
+				S.dmg += lastHp
+				S.tdmg += lastHp
+				lastDmgT = os.clock()
+				table.insert(S.ev, {os.clock(), lastHp})
+			end
 			local id = curId
 			pcall(function()
 				local fi = md("Data", "Catalog").Fish.GetById(id)
@@ -5744,6 +5751,7 @@ do local __howf = function()
 		{flag = "mac", get = function() return "Active: " .. tostring(gw:CountActive()) end},
 	}
 
+	local pngIcons = {}
 	-- ------------------------------------------------------------- mini HUD
 	local hud = Instance.new("ScreenGui")
 	hud.Name = game:GetService("HttpService"):GenerateGUID(false)
@@ -5876,7 +5884,7 @@ do local __howf = function()
 	dpIn.Parent = dp
 	do
 		local pd2 = Instance.new("UIPadding")
-		pd2.PaddingLeft, pd2.PaddingRight, pd2.PaddingTop, pd2.PaddingBottom = UDim.new(0, 12), UDim.new(0, 12), UDim.new(0, 6), UDim.new(0, 6)
+		pd2.PaddingLeft, pd2.PaddingRight, pd2.PaddingTop, pd2.PaddingBottom = UDim.new(0, 32), UDim.new(0, 12), UDim.new(0, 6), UDim.new(0, 6)
 		pd2.Parent = dpIn
 		local ly2 = Instance.new("UIListLayout")
 		ly2.Padding, ly2.SortOrder, ly2.HorizontalAlignment = UDim.new(0, 2), Enum.SortOrder.LayoutOrder, Enum.HorizontalAlignment.Right
@@ -5893,6 +5901,77 @@ do local __howf = function()
 	local dmgL = dpLabel(1, Enum.Font.BuilderSansBold, cT.ac)
 	local dpsL = dpLabel(2, Enum.Font.BuilderSansMedium, cT.tx)
 	local avgL = dpLabel(3, Enum.Font.BuilderSansMedium, cT.tx)
+
+	-- ------------------------------------------- PNG icons for Mini UI + damage panel
+	task.spawn(function()
+		if not (writefile and getcustomasset) then return end
+		local data = {
+			skull = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAEK8gn4Aw70Bgv1Dfz3CP0jhTywAAAAlwSFlzAAADbgAAA24BEEuaYwAAAidJREFUWIW1V9e24yAMxJTQXPj/r71nKQYh4YBzdh4TzaAOZv8NwirndPiHw0lltqWDvNxDj0N9JtlCasROOOyEH8YN2BFafZEQ/IkeJc4n/jlyHgQyzMX29fjshKX5H5z5ESTJn3G/gFBY4hMKi3yksB2L/BBgOeUyP4S2mv4FP+xNAPMFbKFuAfWKH/Q9F6sVKCgu2Jf8oLPAegkL0lCI1/zAf4ugxPCmiQpiMz3usC+ISfiBnwr5i8D1q4AjBPbLCOFRZrX0Qpira1osoEt7CtheTuS5g3MTGwHwmyFvnWj2D9hd8bid5rf15aPtFwWaPvBgTYliqeF9dlaCgdvAwUV5/9NfJPXImJm6z3xnuGUHup/r9OzdPukNGe8zCIRzH9V0o5NytPgqLAI55wY61MDUTFECR5+UWYESgoV2OIkjAYs85nQZcx3Rm8SFXri0TO/CDkOFDnDiN9jKd8tBF3Ir77A9cyl1G2/dtm0hvabOutMQZJ5btiXN9PtVjhOS0Ez29/zz0xhjebFLDC2tMebklE9FgXqj8cHFRb/TLmwoyMcDiv/ODzJlTZtVqAGffZCptM7ji0ePHszTl9zgqTr/0OA0Hwc7BC1wzgvQZVh4a+Edw5pufi2w4AEdwnwO8PaMmH9tjVqxGYa9HyGt6h1KfrC0WdDcs63rKs+Yv1z8k85gwmaUsskAfkKNmvcJzYLYnw59gOExjuPN8QXCPH1yM8b+AJ1PlD1MZH9DAAAAAElFTkSuQmCC",
+			clock = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAMFBMVEVMaXH////////////////////////////////////////////////////////////6w4mEAAAAD3RSTlMAgBAgQL/fn2CP788wr3AhQsCmAAAACXBIWXMAAANuAAADbgEQS5pjAAACDklEQVRYhbVX65qEIAgVb2nl+v5vu582FqBZ+zHLr5mUIxwuovpHsQHAOecAgv3zKXvcMpEt7u+1Dfg8EA/mnfoy0j5keYbQcK9eBPRc3w6Nx+KnhMYn9SLx3nz3Rj9nd+OGZpHL3kEVx/3ahghM3wXEuAnuEYHor7GLl4nrHAEfMQ43SRDHVxH/622gLDKCxcL2HOuQfC5Y2afQviE7yTH64nkh9lYA7NXlhsc0ANPXER3TbNYMARA9jJv9NAgBZL8zti+qT9S1nhIurjBAXkO17lxdegMqMQFFy+LVnAMlvJlwMlAhd5wwSeuE/q47Mbix0DxeDQ3IQCr1ph3hD/297YvquaLpnp0moVHU45qVmnU4sulIx1ZFiYb53EG/LDiUWwVoS4VizSyGDiBrHCgSFcNCeAMQsA8l7k2nUprY7gFAwoEraC0LHF7Ax7FvHpNQDgD0e2Ru1ytx7hUlDKZslQ1/ujzejlUMUMx2dLdqsfi5/n+YQY3uBYDv24V+C3B0ox9rm8bHpWSGABMSEyuWMYmzMMauvgdhnCaSB+DjQpdI01QeSJfK02IaSFdMZzm7QTn3MijnWUPphWyC77Q0cVOdtfXNGDI3jNv6/GLBeXhzsYivNvnlKr7e5QOGeMSRD1nyMU8+aIpHXfmwLR/35Q+OLzx55I8u+bOvQsgenlVkT9+PiB7fL0Up9QtuYH/NkNFdRQAAAABJRU5ErkJggg==",
+			bait = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAQCCAML9g7xCfz9+PcK9QePGjmgAAAAlwSFlzAAADbgAAA24BEEuaYwAAAc1JREFUWIXFV+2ShSAI9VvULN7/aXcqu3ctMMuZXf42HOEABxJ/ZfNkBl+yaOUQAEREq0YRfB5BUB4RwwiCQUSMMICQhxEsDmahVgB0AwjTCuD/NQQcZEFuAPatO2gcATCT3/1RP/ZVUs+HNyI+mmyzaPvL91EGJoeIV/N9Q22CJ5y7EzCW8Ubf5e84d7Rds7iwz/c1MTDZe90pBXQC0XUryUw8Hp40D1WBFJYxgEdRTFwRepeTYQEQbVcUfAiI2LOcgJqhj/UIGoRRBCFbQfQpkmxE0WIS8tYGcTICHKcJDU3KX5e49t4yJQqB6weox2AvuiEwGB6v5dMMH8x6JMbwUCB1giCFNVPZpoNxUxFKkaAYyg8ZW+4A2LqHPgDg/BHjlrG9AfgykC6xrPdhrZStEgQh1KWeqR7xSAAc3+Y2IbsRoqCOaOGG0s2INpDl02f3tGSJGiZZB9BckGQXyN8M3CCQo1QAKrFhEBK544AAEI7qbu5CSATAaYKa/oX1M79w3nOJ1cPSCJcKL5UehcaOD5cyFHOfxg7N3VgOE+qKUU5rrZe7C6NUcuCYL3Wf3/8VmZ0wr1//YYIuhY9B53co4OYtjDg9OIpemxDiB7Z5UXDnkB9IAAAAAElFTkSuQmCC",
+			bag = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAMM8g72CAQBC/r9+fj3BQpZu5IQAAAAlwSFlzAAADbgAAA24BEEuaYwAAAYJJREFUWIXFV8myhCAQc8EBRMf+/699peIeIP08TG4zZVL0QrqpsqittW3+kwy6XhaYfvoXPciBYLV018sVg5LfyB2Ne8cX8QqBAfBFPjTfHqTGn3JZswJ+Y/RzD9j9JxtEvRG6e0RkT43x83H/Z6vplxOIJTBH3VpdDPHrwdkdmybFd7CGKyiBKSNAXAk3ZvgivtQLNWriM0yX55sC/1JdcH6Cn70TnqCLSNKgvhxfTKKluQBm9O8OkOyHQDAjoEO2FDUCGaQigsMqzsj3MBED2QQrmrcC6GL/XkCVxAAEOo0AauacFz4AbQVPRAgDR7Wil/GEcfxtwtaqqGNAIaiqgHyxZOjXI7xKocAsqCJAdfjoBJ5JeC1w3ywLeF6G34egFHhWwRKsE56zSWUH0NJUrYwcSeWJyJFez0aNH+D3C1+H1IpCd3NqzWJ3HDRZV9QEO+XpKxhXCdltt7yq+sLzz+XnU8ivygvaIXmKhqAvmEZ/Fwl+7JTv+PnpH5FMW1VVf6+BjnZpkFirAAAAAElFTkSuQmCC",
+			coin = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAMGCfv4DPQBDvIFDfj3CvABf9LwAAAAlwSFlzAAADbgAAA24BEEuaYwAAArpJREFUWIWlV9e2rSAMDALSLPz/196lUlKw7HPzphAIM5ME4MW8f5vxaEnnrNNfvdUa8mlhVb97x23JyJYt/uLtJ5OFmekrHMfBx/YFjnbwsb3AwQ4+tgc49nfvy8zYf/rqn/M08vePh6cWRoTY7/452wGAv/jnLIEcI7inNB4QOLrBpPnSnp/mwaBjCwgBLBZFGa0cp/4bHQ36ElzclqobpRlL2z2F5pJ8S6maRomkGKFyJUe/ZpOUKmlEwFjvKHTDlDrTiELd84qEtuN5B1uu7usY2Y3KRNaNeEGD1zcAkURWywOhyJKs0kTkExN8oZL+8+DrgmEtUqgrBjRYd+MU9k1mVANVGIVXqCR0mU4J0WqcBwBdR6TMIKBLxsaLLH/93qUD1QsaP3XidNXs3HYgHjuBMEQkNtMkqn33mhlolohgxRgtnaHZ998bFX4CRRdAAZ0aW8xqXUB7WrqAAkBfhrDU6wHGbaI80EQIZC7icSV/UTxH5mJQIw4IVQykPwCPHA6pYxocTnlcultgCz3QMYd994Q14N1mjYk4YXaxI4+oD4fu04VkxZk5Jl0Xbj1PHhRGIXHUgbPSytt+FsZQ/Cs0gne41UXpwJH4Z+DKY229Rxhw1ccJgrW/CZ3Z1mOWXk+6/+HBSQBxqKnBX9bo/hPrwoOialEBK6W/RXjiiZtg7Y+k2GtUwK4Y6wJzHBRAWZbz7FsByzk558qeuydoZCR22ljyoni3zIUxxZp8bSyKzQ1J3tkO+BJvmK058t1OfpVBxuG7rAlF3hA1CJM3aFQwRHAnlNi8uL8HcvPm8OQ8HwQ0S+KetbBbtx/dxB6MRwjgb18JI9P/edcd3HQBZ9GLheFlHWgWPVh4eLR8gVLC9xuU+9vbTWQRtfXF/e3lcwsftnson+DD1gsSg+/z89fjNOgm4QOAf42xmRc990ZTAAAAAElFTkSuQmCC",
+			up = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAr3DPMO/fQIAQYL+PnyBQn2vzdAAAAAlwSFlzAAADbgAAA24BEEuaYwAAAOVJREFUWIXt2MsOgyAQhWFA1Gqtzvs/bWNOUhXBudAl/9oziy/RhY5pXrknnovUVe2ngWipOeCJiEb7Pux76ifrPhJ6G/c7AHrZDnj6ZWIIx97EEOmcnuEAMDJ4SlIyhHSvZIi3vY4hBVAz3ACQmGHO78UMsS8cEDJMXWkvZPiU90SR35cA0MAylAGQrwBAoQJAwPAMwDNwABwDD4CKDAIAVGCQAKA8gwwA5RikACjDsGj2GYZNt78xrAoAlDCoANCFQQmATgxaANTlXwpuxn7V2oF2oB1oB9qBduCvB0amy+8A59wX3ep0o16hMG0AAAAASUVORK5CYII=",
+			cash = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAz5/f72AQgL9AcDAgr49QnI44iwAAAAlwSFlzAAADbgAAA24BEEuaYwAAAQdJREFUWIXtlusOgyAMhculXBSV93/aZVtMaEHIJGYmcn4C/aCc0gBDj9fQbeRtlxBs7JK7C0C5ExIJwJ6x1F8C8O2s7bWArQ1YqgDZBmhTAQS+m/W4KjY4VQCOhofvKGp6hPkQQBPYdwIwgkyIuQzwdNmaWG7YGTAHoKXhUZkEAMjuQUnLAI6tSBL4iN9kjC3ATAG5vy0AK/y8bVwOCBSw/gxAChAtAC7U6uhIfPZKHbfx7TW1CisHsKZYyrRidWIkNVEflHJG2GspuFJ88TWyVNXkwWyS3Q5ZzBtKZkauakOBqQ2ot7T/d2XjmwpVwC9KAe7MH0PGO/0PegDdn6yhx2sIAADgBZJUY0jNz5jlAAAAAElFTkSuQmCC",
+			sword = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAz9+/EGCA7zBAIFCfr3CPeFIm6gAAAAlwSFlzAAADbgAAA24BEEuaYwAAAX5JREFUWIWll1mSgzAQQ81mm73vf9opljCBIFkGfUeqpv3kcpyuyTdtzPj9VZOtCtXofdvm+2Ows4pq9p3urwu7kdcDhjt/RkB/67dK9XfXBeQG3C5gORLRPwO/mRbQQr9JYNVgAYskoCrst0bwe+JXQIjMb0N6ASUNSIMwUr8VKf/E/UkQfjr8o5ovACH8Lw7CfYf1ANDhkxgIqMMnMRTTC7DQEz/u8KGCXaqkwx/RIrAO7+ODA9inYh1eVQGE+m0vtMOLJjB5Y1YmO2xWoqts2MITHbYRjF9v3Q0173BA8HQfcjhBBRo/Xd1VMyqw5ifsCuRxdpUAym46ALGrBiB21QDErhgA2RUDELtiAGRXDIDsigGQ3YtQhQvRj8sQvBoB61RKS2QXYanNACcIwjHEhlwIwlsuBvPQL2yA3kbph9jZP1zCxkz/dRcCRxe/c/GLyZDp3763bg8J/6rOE6vM0U94k/DI/5Xw0H8kPPbvCS/8a8Irv3ORPRmhnHN/pLpo6SPahvEAAAAASUVORK5CYII=",
+			bolt = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAMN+PEO9wv0CAYK+fUM8g26LV4QAAAAlwSFlzAAADbgAAA24BEEuaYwAAAYdJREFUWIW9V9kSgyAQW28Rrfz/13Y8qKiQrDjTvCdqNnsof0M9ma7MfVgxjKVzznU55N50jdthHnLnofq4EO2TB7e2dFf0Ou5i1427ouZkb1cUDXvrwK4oUBGmi11RVEDAcDouQqERgEXAX78BFsFyPi7CwAVwJ8xcABVBRNL58SCdMFIB0gkTFSCdUDM+6wRhWabjiKWZFEGkJwJ8HJE083FE0nwtQl1cBVrID4swT8aW91fCLb0XoRj83IrMeJjmSvp2DIZtrKo8zcEXxXKpaOkfojWhaT6QWHKKybwhFetKyY8aIIo0e6RDqeODLZ9YqmegvsZpJgaIckHhruQLipw5NM1ssLE0QwNEsaD4WMJpVtx5MM2aQxMtKGqAnFv6Mw7zqTt0Z+KW5s5M6+NCAeWhaxrbHo8KBLIu7WDfqQxAAso7OSnw9NK/CthMvp8wZZ4Bh8Btjz4UePKnEhPINmCfUPkG7HM+34BN4IUBq8AbA5Yx/8qApRlfGbD8fr7jC3t/EfkCZ6tgytHr5xgAAAAASUVORK5CYII=",
+			fire = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAzyCvEIBAYO+/n99wUDCPQGeIHAAAAAlwSFlzAAADbgAAA24BEEuaYwAAAZ1JREFUWIW9V9uygyAQUxCBeuP/v/aMeLTVzdrNONM89MFOQoC90fwALoZcsYwzv1oXhvKB5CNHX4pAIPhTEvTUE3ywfNsR/Jfkvx7yqfWD5CeG30t+oW5wkPyW4YMNUAY6GQClPDxBagfQQCYEIuBTAu1DAYf4jADcQSm2xRucBSucZe3qM2OByeK9XjbmG0pR/PepCOynGH2q1VE4mtfvXhfYYnk60kzkRrt/1gTi6YYEf//L4zDY3L35ozgBUAGucC59iF0wfeeX5YgQUN2U6DkhHQZAcTHs4I1B8juGjwygKqwDVDdKQF4BKYCyghJAHZo6RNjiYR1kBManArAXMAKwGymQmUiewiL9rz/OvAnZImINjdmsIB2UvB6Ms+5CTqy+lDbEKRg9yGxUupkGkAxEFOBGS0QBFmACEbd6JhfwrKD0ZAjYZ+1hpGWT/SpBVa+w9JYKdWY1KtyMWyaF26nfEE/p/u0H3lkX/99m7u52G0mpZif0akilYBz5e+iiHYkXQ7fNcgcGP1oG1TPmGJacsw+h58lGNE3zB7TOf9H9lpdLAAAAAElFTkSuQmCC",
+			target = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEVMaXH////////////////////////////////////////////////////////////////x7/yuAAAAEHRSTlMAQN9Qn7/vgCAQj8+vYHAwEwKOcwAAAAlwSFlzAAADbgAAA24BEEuaYwAAAehJREFUWIW9V9eSBCEINI5hwu3/f+0VuyVgnFmtu37aIEg3iCj+EF47ZwHOSf/tNuE8theHMvoLc328GtjiwzhO1TJ/wzxwofvmgBjG5t4OzYHIUItru7OHILrmoaldjb1Dw+/FUmXdG7aUZW9q6fPwj5Ot8mce3NbwEPj+m6tWeMc3aLDg9qZJMhjuofw3MuqyrZEQkolR5ELSP3ZQKoGVSVYPgVybvjmAaGx8I/fUnntgJDzFn8WlnbHWOJ2RIha+9qrYUslEN0xXoovRBlxI63xR1gdtR4Kn365aAF2dKnYKMbSkQoqJdD1Lc8CJESfv6vP9J61wuH/LnmUekyZzBomS73QFPEKYtZjl5UgbdNtCteJzIkqOsmdPWUKNQDWUIAVouvaYJuQAHpM3VVVFAylPKXEXkzRVcScFH6REJN0gcZF9znLUQrkIONnCwUACEoGHXToYXi32Pxx8TWFZxOU0LhcSlv5sKS8fJrzUpo8z3mqzDQVDnm1py02VOMy2dbrZJi+W5att/XJl88nc9U66zg4YPPNTI876kLU+5q0Pmsuj7vqwXbAYoDfu57noo//gaJ7CEuMnjxDhJoi7RxdoOerKz16OPjaffurpwxMgY5GRPXYLvIcgL2gH0BAuec98DkKIXzQ+fmL76ZVzAAAAAElFTkSuQmCC",
+		}
+		local A = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+		local rev = {}
+		for i = 1, 64 do rev[A:sub(i, i)] = i - 1 end
+		local function dec(s)
+			local out, n, bits = {}, 0, 0
+			for ch in s:gmatch("[%w%+/]") do
+				n = n * 64 + rev[ch]
+				bits += 6
+				if bits >= 8 then
+					bits -= 8
+					local v = math.floor(n / 2 ^ bits)
+					out[#out + 1] = string.char(v)
+					n -= v * 2 ^ bits
+				end
+			end
+			return table.concat(out)
+		end
+		pcall(function() if makefolder and not (isfolder and isfolder("HowHub")) then makefolder("HowHub") end end)
+		local assets = {}
+		local function asset(k)
+			if assets[k] then return assets[k] end
+			local ok, r = pcall(function()
+				local path = "HowHub/m_" .. k .. ".png"
+				writefile(path, dec(data[k]))
+				return getcustomasset(path)
+			end)
+			if ok then assets[k] = r end
+			return ok and r or nil
+		end
+		local function mkImg(k, parent, pos, size)
+			local a = asset(k)
+			if not a then return nil end
+			local img = Instance.new("ImageLabel")
+			img.Name, img.BackgroundTransparency, img.Active = "PngIcon", 1, false
+			img.AnchorPoint, img.Position, img.Size = Vector2.new(0.5, 0.5), pos, size
+			img.Image, img.ImageColor3, img.ZIndex = a, cT.ac, 3
+			img.Parent = parent
+			table.insert(pngIcons, img)
+			return img
+		end
+		task.wait(2)
+		-- Mini UI lines: skull, clock, bait, backpack, coin, upgrade, cash, sword, lightning
+		local order = {"skull", "clock", "bait", "bag", "coin", "up", "cash", "sword", "bolt"}
+		for i, lab in labels do
+			local ic = lab:FindFirstChild("Icon")
+			if ic and order[i] and mkImg(order[i], lab, UDim2.fromOffset(-12.5, 8), UDim2.fromOffset(17, 17)) then
+				ic.TextTransparency = 1
+			end
+		end
+		-- Damage panel: Damage / DPS / Avg
+		for lbl, k in {[dmgL] = "sword", [dpsL] = "fire", [avgL] = "target"} do
+			mkImg(k, lbl, UDim2.new(0, -12, 0.5, 0), UDim2.fromOffset(16, 16))
+		end
+	end)
 	local function applyDmy()
 		local pct = math.clamp(tonumber(Flags.dmy2) or 80, 5, 95)
 		dp.Position = UDim2.new(1, -8, pct / 100, 0)
@@ -5936,6 +6015,7 @@ do local __howf = function()
 		while alive() do
 			fr.Visible = Flags.mu ~= false
 			do local tt0 = L.Tr("How Hub | Stats"); if ttl.Text ~= tt0 then ttl.Text = tt0 end end
+			for _, im in pngIcons do im.ImageColor3 = cT.ac end
 			mscale.Scale = math.clamp((tonumber(Flags.mus) or 100) / 100, 0.5, 1.5)
 			fr.BackgroundTransparency = math.clamp(1 - math.clamp(tonumber(Flags.muo) or 100, 1, 100) / 100 + 0.08, 0, 1)
 			do
