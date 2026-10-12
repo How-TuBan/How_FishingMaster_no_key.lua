@@ -1,4 +1,40 @@
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+-- Safe loader: reports the real reason instead of "attempt to call a nil value"
+local function SafeLoad(urls)
+    local lastErr = "unknown"
+    local compile = loadstring or load
+    if type(compile) ~= "function" then
+        warn("[How Hub] Your executor does not support loadstring")
+        return nil
+    end
+    for _, url in ipairs(urls) do
+        local okGet, src = pcall(function() return game:HttpGet(url) end)
+        if okGet and type(src) == "string" and #src > 0 then
+            local fn, cerr = compile(src)
+            if fn then
+                local okRun, res = pcall(fn)
+                if okRun and res then
+                    return res
+                end
+                lastErr = "run error: " .. tostring(res)
+            else
+                lastErr = "compile error: " .. tostring(cerr)
+            end
+        else
+            lastErr = "HttpGet failed: " .. tostring(src)
+        end
+        warn("[How Hub] Failed to load " .. url .. " -> " .. lastErr)
+    end
+    return nil
+end
+
+local Fluent = SafeLoad({
+    "https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua",
+    "https://raw.githubusercontent.com/discoart/FluentPlus/refs/heads/main/release.lua",
+})
+if not Fluent then
+    warn("[How Hub] Cannot load the UI library (Fluent). Check your executor / internet.")
+    return
+end
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -145,7 +181,13 @@ task.spawn(function()
         end
     end)
     if allow then
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/NoahTyrant/StarCrow/refs/heads/main/Loader"))()
+        local okG, src = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/How-TuBan/How_FishingMaster_no_key.lua/refs/heads/main/HowHub.lua.txt") end)
+        if okG and type(src) == "string" then
+            local fn, err = loadstring(src)
+            if fn then fn() else warn("[How Hub] compile error: " .. tostring(err)) end
+        else
+            warn("[How Hub] HttpGet failed")
+        end
     end
 end)
 ]]
